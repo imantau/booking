@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#f5f0ea">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Гостевой Дом — Бронирование</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f0ea;--s1:#fff;--s2:#ede8e0;--s3:#e0d8cc;
+  --acc:#4a6e2a;--acc2:#2e4d18;--acc3:#7aaa46;
+  --gold:#7a5a18;--gold2:#b8882a;
+  --txt:#1a2810;--tx2:#4a5e34;--tx3:#8a9a74;--tx4:#c0caa8;
+  --red:#b03030;--grn:#2a7a50;--org:#7a5010;
+  --brd:rgba(0,0,0,.07);--sh:0 3px 18px rgba(0,0,0,.07);
+  --r:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:90px}
+
+/* HERO */
+.hero{background:linear-gradient(160deg,#1e3a0e 0%,#2e5020 50%,#4a7a2a 100%);padding:36px 20px 50px;text-align:center;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M0 40 Q20 20 40 40 Q60 60 80 40' fill='none' stroke='rgba(255,255,255,.04)' stroke-width='1'/%3E%3C/svg%3E")}
+.hero-ico{font-size:50px;display:block;position:relative;z-index:1;margin-bottom:10px}
+.hero-tit{font-family:'Cormorant Garamond',serif;font-size:32px;color:#f0e8d8;font-weight:600;position:relative;z-index:1;line-height:1.2}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.55);margin-top:8px;position:relative;z-index:1;font-weight:400}
+.wave{height:38px;background:var(--bg);clip-path:ellipse(55% 100% at 50% 100%);margin-top:-2px}
+
+/* NAV TABS (bottom) */
+.page-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(245,240,234,.97);backdrop-filter:blur(12px);border-top:1px solid var(--brd);display:flex;z-index:200;padding:0 0 8px}
+.pnb{flex:1;padding:9px 4px 5px;background:none;border:none;cursor:pointer;color:var(--tx3);font-size:9px;font-family:'Jost',sans-serif;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:3px;letter-spacing:.5px;text-transform:uppercase;transition:color .2s}
+.pnb.active{color:var(--acc)}
+.pnb svg{width:20px;height:20px}
+
+/* SECTIONS */
+.section{display:none;padding:0 16px 16px;max-width:500px;margin:0 auto}
+.section.active{display:block;animation:fu .2s ease}
+@keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARDS */
+.card{background:var(--s1);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--sh);border:1px solid var(--brd)}
+.ctit{font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--acc2);margin-bottom:14px;font-weight:600}
+.ctit small{font-family:'Jost',sans-serif;font-size:11.5px;color:var(--tx3);font-weight:400;display:block;margin-top:2px}
+
+/* STEPS */
+.steps{display:flex;align-items:center;margin:18px 0 20px;padding:0 16px}
+.step{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.sn{width:30px;height:30px;border-radius:50%;border:2px solid var(--tx4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--tx4);transition:all .3s}
+.sl{font-size:9.5px;font-weight:700;color:var(--tx4);text-transform:uppercase;letter-spacing:.5px;transition:all .3s;text-align:center}
+.step.active .sn{background:var(--acc);border-color:var(--acc);color:#fff}
+.step.active .sl{color:var(--acc)}
+.step.done .sn{background:var(--grn);border-color:var(--grn);color:#fff}
+.step.done .sl{color:var(--grn)}
+.sline{flex:1;height:2px;background:var(--tx4);margin-bottom:18px;transition:background .3s;min-width:8px}
+.sline.done{background:var(--grn)}
+
+/* ROOM CARDS */
+.rcard{border:2px solid var(--brd);border-radius:14px;padding:15px;margin-bottom:10px;cursor:pointer;transition:all .2s;background:var(--s1);position:relative}
+.rcard:active{transform:scale(.99)}
+.rcard.sel{border-color:var(--acc);background:#f3f8ec}
+.rcard.unavail{opacity:.4;cursor:not-allowed;background:var(--s2)}
+.rc-h{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.rc-name{font-weight:700;font-size:15px}
+.rc-type{font-size:11px;color:var(--tx2);margin-top:2px;font-weight:500}
+.rc-price{font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--gold);font-weight:700;text-align:right;white-space:nowrap}
+.rc-pricesub{font-family:'Jost',sans-serif;font-size:10px;color:var(--tx3);display:block;text-align:right}
+.feats{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.feat{background:var(--s2);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--tx2);font-weight:500}
+.sel-chk{position:absolute;top:13px;right:46px;width:22px;height:22px;border-radius:50%;background:var(--acc);display:none;align-items:center;justify-content:center;color:#fff;font-size:12px}
+.rcard.sel .sel-chk{display:flex}
+
+/* SERVICES */
+.svc-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--brd)}
+.svc-row:last-child{border-bottom:none}
+.svc-l{display:flex;align-items:center;gap:11px}
+.svc-ico{width:40px;height:40px;border-radius:11px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.svc-nm{font-weight:600;font-size:13.5px}
+.svc-pr{font-size:11.5px;color:var(--tx2);margin-top:2px}
+.qty-btn{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--brd);background:var(--s1);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(--acc);font-weight:700;transition:all .18s;flex-shrink:0}
+.qty-btn:active{background:var(--s2)}
+.qty-n{font-weight:700;font-size:15px;min-width:22px;text-align:center}
+
+/* CALENDAR */
+.cal{background:var(--s1);border:1px solid var(--brd);border-radius:14px;overflow:hidden;margin-top:12px}
+.cal-h{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;background:var(--s2);border-bottom:1px solid var(--brd)}
+.cal-m{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--acc2)}
+.cal-nav{background:none;border:none;cursor:pointer;color:var(--acc);font-size:20px;padding:3px 8px;border-radius:7px}
+.cal-nav:active{background:var(--s3)}
+.cal-dow{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--brd)}
+.cal-dow span{text-align:center;padding:7px 0;font-size:10.5px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.3px}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr)}
+.cday{text-align:center;padding:9px 3px;font-size:13px;cursor:pointer;transition:all .14s;position:relative;font-weight:500;border-radius:0}
+.cday.empty,.cday.past{color:var(--tx4);cursor:not-allowed}
+.cday.today-d{font-weight:800;color:var(--acc)}
+.cday.we:not(.past){color:var(--org)}
+.cday.in-range{background:#eef7e4}
+.cday.sel-start{background:var(--acc)!important;color:#fff;border-radius:10px 0 0 10px}
+.cday.sel-end{background:var(--acc)!important;color:#fff;border-radius:0 10px 10px 0}
+
+/* DATE BOXES */
+.dboxes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:0}
+.dbox{background:var(--s2);border:2px solid transparent;border-radius:12px;padding:13px;cursor:pointer;transition:all .2s}
+.dbox.act{border-color:var(--acc);background:#f0f7e8}
+.dblbl{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.dbval{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--txt)}
+.dbval.empty{color:var(--tx4);font-style:italic;font-size:13px;font-family:'Jost',sans-serif;font-weight:400}
+
+/* FORM */
+.fg{margin-bottom:12px}
+.fl{font-size:10.5px;font-weight:700;color:var(--tx3);margin-bottom:5px;display:block;letter-spacing:.6px;text-transform:uppercase}
+.fi{width:100%;background:var(--s2);border:1.5px solid transparent;border-radius:10px;padding:11px 13px;color:var(--txt);font-family:'Jost',sans-serif;font-size:14.5px;outline:none;transition:border .18s;-webkit-appearance:none}
+.fi:focus{border-color:var(--acc3);background:#f3f9eb}
+.fi::placeholder{color:var(--tx4)}
+textarea.fi{resize:none;line-height:1.5}
+
+/* BTNS */
+.btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:14px 18px;border-radius:12px;font-family:'Jost',sans-serif;font-size:14px;font-weight:600;border:none;cursor:pointer;transition:all .2s;width:100%;letter-spacing:.2px}
+.btn-p{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;box-shadow:0 4px 16px rgba(74,110,42,.28)}
+.btn-p:active{transform:scale(.98)}
+.btn-p:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-o{background:transparent;color:var(--acc);border:1.5px solid rgba(74,110,42,.3)}
+.btn-d{background:rgba(176,48,48,.08);color:var(--red);border:1.5px solid rgba(176,48,48,.2)}
+.btn-ghost{background:var(--s2);color:var(--tx2);border:1px solid var(--brd)}
+.btn-sm{padding:8px 14px;font-size:12px;border-radius:9px;width:auto}
+.brow{display:flex;gap:10px}
+
+/* BOTTOM CTA */
+.bnav-cta{position:fixed;bottom:56px;left:0;right:0;background:rgba(245,240,234,.97);backdrop-filter:blur(10px);border-top:1px solid var(--brd);padding:12px 16px;display:flex;gap:10px;z-index:150;max-width:500px;margin:0 auto;left:50%;transform:translateX(-50%);width:100%}
+
+/* NIGHTS PILL */
+.nights-pill{text-align:center;margin-top:11px}
+.nights-pill span{background:var(--s2);border-radius:20px;padding:6px 16px;font-size:13px;font-weight:600;color:var(--acc2)}
+
+/* SUMMARY */
+.si{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--brd)}
+.si:last-child{border-bottom:none}
+.sil{font-size:13px;color:var(--tx2)}
+.siv{font-size:14px;font-weight:600;color:var(--txt)}
+.si-total{font-family:'Cormorant Garamond',serif;font-size:21px;color:var(--gold);font-weight:700}
+
+/* INFO BOX */
+.ibox{background:#eff7e6;border:1.5px solid rgba(74,110,42,.18);border-radius:12px;padding:12px 13px;display:flex;gap:9px;align-items:flex-start;margin-bottom:10px}
+.ibox p{font-size:12.5px;color:var(--tx2);line-height:1.5}
+
+/* SUCCESS */
+.success{text-align:center;padding:36px 16px}
+.succ-ico{font-size:68px;margin-bottom:14px;animation:pop .4s ease}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.succ-tit{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--acc2);font-weight:600;margin-bottom:8px}
+.succ-sub{font-size:13.5px;color:var(--tx2);line-height:1.6}
+.bk-code{background:var(--s2);border-radius:12px;padding:13px;margin:18px 0;font-family:monospace;font-size:20px;font-weight:700;color:var(--acc);letter-spacing:2px}
+
+/* BOOKING LIST (client) */
+.bk-item{background:var(--s1);border-radius:14px;padding:15px;margin-bottom:10px;box-shadow:var(--sh);border:1px solid var(--brd);position:relative;overflow:hidden}
+.bk-stripe{position:absolute;left:0;top:0;bottom:0;width:4px}
+.bk-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.bk-room{font-weight:700;font-size:15px}
+.bk-dates{font-size:12px;color:var(--tx2);margin-top:2px}
+.bk-badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.bs-new{background:rgba(61,189,181,.1);color:#1a8078;border:1px solid rgba(61,189,181,.25)}
+.bs-upcoming{background:rgba(74,110,42,.1);color:var(--acc2);border:1px solid rgba(74,110,42,.2)}
+.bs-active{background:rgba(42,122,80,.1);color:var(--grn);border:1px solid rgba(42,122,80,.2)}
+.bs-completed{background:rgba(0,0,0,.06);color:var(--tx2);border:1px solid var(--brd)}
+.bs-cancelled{background:rgba(176,48,48,.08);color:var(--red);border:1px solid rgba(176,48,48,.2)}
+.bk-price{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--gold);font-weight:700}
+.svc-tag{display:inline-flex;align-items:center;gap:4px;background:var(--s2);border-radius:20px;padding:3px 9px;font-size:11px;font-weight:500;color:var(--tx2);margin-right:5px;margin-top:4px}
+
+/* PHONE CHECK */
+.phone-check-wrap{background:var(--s1);border-radius:var(--r);padding:24px 20px;box-shadow:var(--sh);border:1px solid var(--brd)}
+.pc-title{font-family:'Cormorant Garamond',serif;font-size:21px;color:var(--acc2);font-weight:600;margin-bottom:6px}
+.pc-sub{font-size:13px;color:var(--tx3);margin-bottom:18px;line-height:1.5}
+
+/* STARS */
+.stars{display:flex;gap:8px;margin:6px 0 14px}
+.star{font-size:32px;cursor:pointer;transition:transform .15s;opacity:.3}
+.star.lit{opacity:1}
+.star:active{transform:scale(.85)}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:9.5px;font-weight:700}
+.bg-grn{background:rgba(42,122,80,.1);color:var(--grn);border:1px solid rgba(42,122,80,.18)}
+.bg-red{background:rgba(176,48,48,.1);color:var(--red);border:1px solid rgba(176,48,48,.18)}
+
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:10px}
+
+.hidden{display:none!important}
+.div{height:1px;background:var(--brd);margin:11px 0}
+.toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#1e2e12;color:#e8f0d8;padding:11px 20px;border-radius:28px;font-size:13px;font-weight:600;z-index:1000;display:none;box-shadow:0 4px 20px rgba(0,0,0,.2);white-space:nowrap}
+.toast.show{display:block;animation:ti .22s ease}
+@keyframes ti{from{opacity:0;top:4px}to{opacity:1;top:14px}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <span class="hero-ico">🏡</span>
+  <h1 class="hero-tit">Гостевой Дом</h1>
+  <p class="hero-sub">Бронирование напрямую · Лучшая цена</p>
+</div>
+<div class="wave"></div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══ SECTION: BOOKING ═══ -->
+<div class="section active" id="sec-book">
+
+  <!-- STEPS -->
+  <div class="steps" id="steps">
+    <div class="step active" id="st1"><div class="sn">1</div><div class="sl">Даты</div></div>
+    <div class="sline" id="sl1"></div>
+    <div class="step" id="st2"><div class="sn">2</div><div class="sl">Номер</div></div>
+    <div class="sline" id="sl2"></div>
+    <div class="step" id="st3"><div class="sn">3</div><div class="sl">Услуги</div></div>
+    <div class="sline" id="sl3"></div>
+    <div class="step" id="st4"><div class="sn">4</div><div class="sl">Данные</div></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div id="v1">
+    <div class="card">
+      <div class="ctit">📅 Выберите даты</div>
+      <div class="dboxes">
+        <div class="dbox act" id="db-ci" onclick="calMode='ci';renderCal()"><div class="dblbl">Заезд</div><div class="dbval empty" id="dv-ci">Выберите</div></div>
+        <div class="dbox" id="db-co" onclick="calMode='co';renderCal()"><div class="dblbl">Выезд</div><div class="dbval empty" id="dv-co">Выберите</div></div>
+      </div>
+      <div class="cal" id="calendar">
+        <div class="cal-h">
+          <button class="cal-nav" onclick="calM(-1)">‹</button>
+          <div class="cal-m" id="cal-tit"></div>
+          <button class="cal-nav" onclick="calM(1)">›</button>
+        </div>
+        <div class="cal-dow"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span style="color:var(--org)">Сб</span><span style="color:var(--org)">Вс</span></div>
+        <div class="cal-days" id="cal-days"></div>
+      </div>
+      <div class="nights-pill hidden" id="nights-info"><span>🌙 <span id="nights-num">0</span> ночей</span></div>
+    </div>
+    <div class="bnav-cta"><button class="btn btn-p" id="btn1" onclick="goStep(2)" disabled>Выбрать номер →</button></div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="v2" class="hidden">
+    <div class="card">
+      <div class="ctit">🏠 Выберите номер<small id="dates-cap"></small></div>
+      <div id="rooms-list"></div>
+    </div>
+    <div class="bnav-cta"><button class="btn btn-o" style="flex:0 0 80px" onclick="goStep(1)">←</button><button class="btn btn-p" id="btn2" onclick="goStep(3)" disabled>Услуги →</button></div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div id="v3" class="hidden">
+    <div class="card">
+      <div class="ctit">✨ Доп. услуги<small>Добавьте к вашему отдыху</small></div>
+      <div id="svcs-list"></div>
+    </div>
+    <div class="bnav-cta"><button class="btn btn-o" style="flex:0 0 80px" onclick="goStep(2)">←</button><button class="btn btn-p" onclick="goStep(4)">Ваши данные →</button></div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div id="v4" class="hidden">
+    <div class="card">
+      <div class="ctit">👤 Ваши данные</div>
+      <div class="fg"><label class="fl">Имя и фамилия *</label><input class="fi" id="c-name" placeholder="Иванов Иван"></div>
+      <div class="fg"><label class="fl">Телефон *</label><input class="fi" id="c-phone" type="tel" placeholder="+7 900 000-00-00"></div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="c-email" type="email" placeholder="mail@example.com"></div>
+      <div class="fg"><label class="fl">Пожелания</label><textarea class="fi" id="c-notes" rows="3" placeholder="Ранний заезд, нужна детская кроватка..."></textarea></div>
+    </div>
+    <div class="card">
+      <div class="ctit">📋 Ваш заказ</div>
+      <div id="summary"></div>
+      <div class="div"></div>
+      <div class="ibox"><svg width="17" height="17" fill="none" stroke="var(--acc)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><p>Заявка поступит администратору и будет подтверждена в течение нескольких часов. Мы свяжемся с вами по телефону.</p></div>
+    </div>
+    <div class="bnav-cta"><button class="btn btn-o" style="flex:0 0 80px" onclick="goStep(3)">←</button><button class="btn btn-p" onclick="submitBooking()">Отправить заявку ✓</button></div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div id="v-success" class="hidden">
+    <div class="success">
+      <div class="succ-ico">🎉</div>
+      <div class="succ-tit">Заявка отправлена!</div>
+      <div class="succ-sub">Мы получили вашу заявку.<br>Свяжемся для подтверждения в ближайшее время.</div>
+      <div class="bk-code" id="bk-code">ЗАЯ-0001</div>
+      <div style="background:var(--s2);border-radius:13px;padding:15px;text-align:left;margin-bottom:20px" id="succ-detail"></div>
+      <button class="btn btn-p" onclick="newBk()">Забронировать ещё</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SECTION: MY BOOKINGS ═══ -->
+<div class="section" id="sec-mybk">
+  <div style="padding-top:16px">
+    <!-- Phone entry -->
+    <div id="phone-gate">
+      <div class="phone-check-wrap">
+        <div class="pc-title">📋 Мои бронирования</div>
+        <div class="pc-sub">Введите номер телефона, указанный при бронировании, чтобы увидеть ваши заявки.</div>
+        <div class="fg"><label class="fl">Телефон</label><input class="fi" id="my-phone" type="tel" placeholder="+7 900 000-00-00" onkeydown="if(event.key==='Enter')lookupPhone()"></div>
+        <button class="btn btn-p" onclick="lookupPhone()">Найти мои брони</button>
+      </div>
+    </div>
+    <!-- Results -->
+    <div id="my-bk-results" class="hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--acc2);font-weight:600" id="my-phone-lbl"></div>
+        <button class="btn btn-ghost btn-sm" onclick="resetPhoneGate()">Выйти</button>
+      </div>
+      <div id="my-bk-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SECTION: REVIEW ═══ -->
+<div class="section" id="sec-review">
+  <div style="padding-top:16px">
+    <div class="card">
+      <div class="ctit">💬 Оставить отзыв<small>Ваше мнение очень важно для нас</small></div>
+      <div class="fg"><label class="fl">Ваше имя</label><input class="fi" id="rv-name" placeholder="Иванов Иван"></div>
+      <div class="fg"><label class="fl">Телефон (для связи)</label><input class="fi" id="rv-phone" type="tel" placeholder="+7..."></div>
+      <div class="fg">
+        <label class="fl">Оценка</label>
+        <div class="stars" id="stars-row">
+          <span class="star" onclick="setStar(1)">★</span>
+          <span class="star" onclick="setStar(2)">★</span>
+          <span class="star" onclick="setStar(3)">★</span>
+          <span class="star" onclick="setStar(4)">★</span>
+          <span class="star" onclick="setStar(5)">★</span>
+        </div>
+        <div style="font-size:12px;color:var(--tx3)" id="star-lbl">Нажмите на звезду</div>
+      </div>
+      <div class="fg"><label class="fl">Отзыв</label><textarea class="fi" id="rv-text" rows="5" placeholder="Расскажите о вашем пребывании: что понравилось, что можно улучшить..."></textarea></div>
+      <button class="btn btn-p" onclick="submitReview()" style="margin-top:4px">Отправить отзыв</button>
+    </div>
+
+    <!-- Published reviews -->
+    <div class="card">
+      <div class="ctit">Отзывы гостей</div>
+      <div id="pub-reviews"></div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="page-nav">
+  <button class="pnb active" id="pnb-book" onclick="switchSection('book',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Бронировать</span>
+  </button>
+  <button class="pnb" id="pnb-mybk" onclick="switchSection('mybk',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>Мои брони</span>
+  </button>
+  <button class="pnb" id="pnb-review" onclick="switchSection('review',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Отзывы</span>
+  </button>
+</nav>
+
+<script>
+// ─── SHARED KEY ───
+const KEY='ghpro_v3';
+let S=null;
+function loadS(){
+  S=JSON.parse(localStorage.getItem(KEY)||'null')||{
+    rooms:[{id:1,num:'1',type:'Стандарт',beds:1,price:2000,desc:'',status:'free'},{id:2,num:'2',type:'Стандарт',beds:1,price:2000,desc:'',status:'free'},{id:3,num:'3',type:'Улучшенный',beds:2,price:2800,desc:'Вид на лес',status:'free'},{id:4,num:'4',type:'Люкс',beds:2,price:4500,desc:'Джакузи',status:'free'},{id:5,num:'5',type:'Семейный',beds:3,price:3500,desc:'',status:'free'},{id:6,num:'6',type:'Коттедж',beds:4,price:6000,desc:'Отдельный домик',status:'free'}],
+    services:[{id:1,name:'Баня',icon:'🧖',price:500,ptype:'hour',desc:'Русская баня на дровах'},{id:2,name:'Катер',icon:'🚤',price:1500,ptype:'hour',desc:'Прогулка по реке'},{id:3,name:'Бильярд',icon:'🎱',price:400,ptype:'hour',desc:'Профессиональный стол'},{id:4,name:'Мангал',icon:'🍖',price:800,ptype:'session',desc:'С дровами'}],
+    bookings:[],svcBookings:[],guests:[],reviews:[],
+    nid:{room:7,svc:5,bk:1,sbk:1,g:1,rev:1}
+  };
+}
+const saveS=()=>localStorage.setItem(KEY,JSON.stringify(S));
+const today=()=>new Date().toISOString().slice(0,10);
+const fmt=d=>d?new Date(d).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
+const fmtS=d=>d?new Date(d).toLocaleDateString('ru-RU',{day:'numeric',month:'short'}):'—';
+const days=(a,b)=>Math.max(1,Math.round((new Date(b)-new Date(a))/86400000));
+const ptL={hour:'ч.',session:'сеанс',day:'день',person:'чел.'};
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+
+// ─── SECTION SWITCH ───
+function switchSection(s,btn){
+  ['book','mybk','review'].forEach(id=>{
+    document.getElementById('sec-'+id).classList.remove('active');
+    document.getElementById('pnb-'+id).classList.remove('active');
+  });
+  document.getElementById('sec-'+s).classList.add('active');
+  btn.classList.add('active');
+  if(s==='review')renderPubReviews();
+  // show/hide bottom cta
+  document.querySelectorAll('.bnav-cta').forEach(el=>el.style.display=s==='book'?'flex':'none');
+}
+
+// ─── BOOKING FLOW ───
+let bk={ci:null,co:null,room:null,svcs:{}};
+let calYear,calMonth2,calMode='ci';
+let curStep=1;
+
+function initCal(){const n=new Date();calYear=n.getFullYear();calMonth2=n.getMonth();}
+function calM(d){calMonth2+=d;if(calMonth2>11){calMonth2=0;calYear++;}if(calMonth2<0){calMonth2=11;calYear--;}renderCal();}
+
+function isRoomAvail(roomId,ci,co){
+  return !S.bookings.some(b=>b.room===roomId&&b.status!=='cancelled'&&b.status!=='new'&&ci<b.co&&co>b.ci);
+}
+
+function renderCal(){
+  document.getElementById('db-ci').classList.toggle('act',calMode==='ci');
+  document.getElementById('db-co').classList.toggle('act',calMode==='co');
+  const MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  document.getElementById('cal-tit').textContent=MONTHS[calMonth2]+' '+calYear;
+  const dInM=new Date(calYear,calMonth2+1,0).getDate();
+  const first=(new Date(calYear,calMonth2,1).getDay()+6)%7;
+  const todayStr=today();
+  let html='';
+  for(let i=0;i<first;i++)html+='<div class="cday empty"></div>';
+  for(let d=1;d<=dInM;d++){
+    const ds=`${calYear}-${String(calMonth2+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isPast=ds<todayStr,isToday=ds===todayStr;
+    const dow=(new Date(ds).getDay()+6)%7,isWE=dow>=5;
+    let cls='cday';
+    if(isPast)cls+=' past';if(isToday)cls+=' today-d';if(isWE&&!isPast)cls+=' we';
+    if(bk.ci&&bk.co){if(ds===bk.ci)cls+=' sel-start';else if(ds===bk.co)cls+=' sel-end';else if(ds>bk.ci&&ds<bk.co)cls+=' in-range';}
+    else if(bk.ci&&ds===bk.ci)cls+=' sel-start';
+    const oc=isPast?'':`onclick="pickDate('${ds}')"`;
+    html+=`<div class="${cls}" ${oc}>${d}</div>`;
+  }
+  document.getElementById('cal-days').innerHTML=html;
+  const fs=d=>{if(!d)return null;return new Date(d).toLocaleDateString('ru-RU',{day:'numeric',month:'short'});};
+  const ci=fs(bk.ci),co=fs(bk.co);
+  const ciEl=document.getElementById('dv-ci'),coEl=document.getElementById('dv-co');
+  ciEl.textContent=ci||'Выберите';ciEl.className=ci?'dbval':'dbval empty';
+  coEl.textContent=co||'Выберите';coEl.className=co?'dbval':'dbval empty';
+  const ni=document.getElementById('nights-info');
+  if(bk.ci&&bk.co){document.getElementById('nights-num').textContent=days(bk.ci,bk.co);ni.classList.remove('hidden');}else ni.classList.add('hidden');
+  document.getElementById('btn1').disabled=!(bk.ci&&bk.co&&bk.co>bk.ci);
+}
+
+function pickDate(ds){
+  if(calMode==='ci'){bk.ci=ds;bk.co=null;calMode='co';}
+  else{if(ds<=bk.ci){bk.ci=ds;bk.co=null;calMode='co';}else{bk.co=ds;calMode='ci';}}
+  renderCal();
+}
+
+function goStep(n){
+  if(n===2&&!(bk.ci&&bk.co))return;
+  if(n===3&&!bk.room)return;
+  curStep=n;
+  [1,2,3,4].forEach(i=>{document.getElementById('v'+i).classList.add('hidden');});
+  document.getElementById('v'+n).classList.remove('hidden');
+  document.getElementById('v-success').classList.add('hidden');
+  for(let i=1;i<=4;i++){const s=document.getElementById('st'+i);s.classList.remove('active','done');if(i===n)s.classList.add('active');else if(i<n)s.classList.add('done');if(i<4)document.getElementById('sl'+i).classList.toggle('done',i<n);}
+  if(n===2)renderRooms();
+  if(n===3)renderSvcs();
+  if(n===4)renderSummary();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderRooms(){
+  loadS();
+  document.getElementById('dates-cap').textContent=`${fmtS(bk.ci)} – ${fmtS(bk.co)} · ${days(bk.ci,bk.co)} ночей`;
+  const el=document.getElementById('rooms-list');
+  if(!S.rooms.length){el.innerHTML='<p style="color:var(--tx3);text-align:center;padding:20px">Номера не настроены</p>';return;}
+  el.innerHTML=S.rooms.map(r=>{
+    const avail=isRoomAvail(r.id,bk.ci,bk.co),sel=bk.room===r.id;
+    const n=days(bk.ci,bk.co);
+    return`<div class="rcard${sel?' sel':''}${!avail?' unavail':''}" ${avail?`onclick="selRoom(${r.id})"`:''}>
+      <div class="sel-chk">✓</div>
+      <div class="rc-h"><div><div class="rc-name">Номер ${r.num}</div><div class="rc-type">${r.type}</div></div><div><div class="rc-price">${r.price.toLocaleString('ru')}₽<span class="rc-pricesub">за ночь</span></div></div></div>
+      <div class="feats">
+        <span class="feat">🛏 ${r.beds} кр.</span>
+        ${r.desc?`<span class="feat">${r.desc}</span>`:''}
+        <span class="feat">${(n*r.price).toLocaleString('ru')}₽ итого</span>
+        <span class="bk-badge ${avail?'bs-upcoming':'bs-cancelled'}">${avail?'Свободен':'Занят'}</span>
+      </div></div>`;
+  }).join('');
+}
+
+function selRoom(id){bk.room=id;renderRooms();document.getElementById('btn2').disabled=false;}
+
+function renderSvcs(){
+  loadS();
+  const el=document.getElementById('svcs-list');
+  if(!S.services.length){el.innerHTML='<p style="color:var(--tx3)">Нет доступных услуг</p>';return;}
+  el.innerHTML=S.services.map(s=>`
+    <div class="svc-row">
+      <div class="svc-l"><div class="svc-ico">${s.icon}</div><div><div class="svc-nm">${s.name}</div><div class="svc-pr">${s.price.toLocaleString('ru')}₽/${ptL[s.ptype]||'ч.'} ${s.desc?'· '+s.desc:''}</div></div></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="qty-btn" onclick="svcQ(${s.id},-1)">−</button>
+        <div class="qty-n" id="sq-${s.id}">${bk.svcs[s.id]||0}</div>
+        <button class="qty-btn" onclick="svcQ(${s.id},1)">+</button>
+      </div></div>`).join('');
+}
+
+function svcQ(id,d){const c=bk.svcs[id]||0,n=Math.max(0,c+d);if(n===0)delete bk.svcs[id];else bk.svcs[id]=n;const el=document.getElementById('sq-'+id);if(el)el.textContent=n;}
+
+function renderSummary(){
+  loadS();
+  const room=S.rooms.find(r=>r.id===bk.room);if(!room)return;
+  const n=days(bk.ci,bk.co),rt=n*room.price;
+  let st=0,sl='';
+  Object.entries(bk.svcs).forEach(([id,q])=>{const s=S.services.find(x=>x.id===parseInt(id));if(!s)return;const c=s.price*q;st+=c;sl+=`<div class="si"><span class="sil">${s.icon} ${s.name} × ${q}${ptL[s.ptype]||'ч.'}</span><span class="siv">${c.toLocaleString('ru')}₽</span></div>`;});
+  document.getElementById('summary').innerHTML=`<div class="si"><span class="sil">📅 Заезд</span><span class="siv">${fmt(bk.ci)}</span></div><div class="si"><span class="sil">📅 Выезд</span><span class="siv">${fmt(bk.co)}</span></div><div class="si"><span class="sil">🌙 Ночей</span><span class="siv">${n}</span></div><div class="si"><span class="sil">🏠 Номер ${room.num} · ${room.type}</span><span class="siv">${rt.toLocaleString('ru')}₽</span></div>${sl}<div class="si"><span class="sil" style="font-weight:700">Итого</span><span class="si-total">${(rt+st).toLocaleString('ru')}₽</span></div>`;
+}
+
+function submitBooking(){
+  const name=document.getElementById('c-name').value.trim(),phone=document.getElementById('c-phone').value.trim();
+  if(!name||!phone){showToast('⚠️ Введите имя и телефон');return;}
+  loadS();
+  const room=S.rooms.find(r=>r.id===bk.room);if(!room){showToast('Выберите номер');return;}
+  const b={id:S.nid.bk++,guestName:name,phone,email:document.getElementById('c-email').value,room:bk.room,ci:bk.ci,co:bk.co,guests:1,price:room.price,advance:0,notes:document.getElementById('c-notes').value,status:'new',paid:false,source:'client',created:today()};
+  S.bookings.push(b);
+  Object.entries(bk.svcs).forEach(([id,q])=>{S.svcBookings.push({id:S.nid.sbk++,svcId:parseInt(id),guest:name,date:bk.ci,time:'10:00',dur:q,notes:'',status:'upcoming',paid:false,created:today()});});
+  if(!S.guests.find(g=>g.phone===phone))S.guests.push({id:S.nid.g++,name,phone,email:document.getElementById('c-email').value,doc:'',source:'Онлайн',notes:document.getElementById('c-notes').value,created:today()});
+  saveS();
+  // show success
+  document.getElementById('bk-code').textContent='ЗАЯ-'+String(b.id).padStart(4,'0');
+  const n=days(bk.ci,bk.co),svcs=Object.entries(bk.svcs).map(([id,q])=>{const s=S.services.find(x=>x.id===parseInt(id));return s?`${s.icon}${s.name}×${q}`:''}).filter(Boolean).join(' ');
+  document.getElementById('succ-detail').innerHTML=`<div style="font-size:13.5px;color:var(--tx2);line-height:2">🏠 Номер ${room.num} · ${room.type}<br>📅 ${fmt(bk.ci)} — ${fmt(bk.co)} (${n}н.)<br>👤 ${name} · ${phone}${svcs?`<br>✨ ${svcs}`:''}<br>💰 <b style="color:var(--gold)">${(n*room.price).toLocaleString('ru')}₽</b></div>`;
+  [1,2,3,4].forEach(i=>document.getElementById('v'+i).classList.add('hidden'));
+  document.getElementById('steps').classList.add('hidden');
+  document.getElementById('v-success').classList.remove('hidden');
+  document.querySelectorAll('.bnav-cta').forEach(el=>el.style.display='none');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function newBk(){
+  bk={ci:null,co:null,room:null,svcs:{}};
+  document.getElementById('steps').classList.remove('hidden');
+  document.getElementById('v-success').classList.add('hidden');
+  document.querySelectorAll('.bnav-cta').forEach(el=>el.style.display='flex');
+  goStep(1);renderCal();
+}
+
+// ─── MY BOOKINGS ───
+function lookupPhone(){
+  const ph=document.getElementById('my-phone').value.trim();
+  if(!ph){showToast('⚠️ Введите номер телефона');return;}
+  loadS();
+  const myBks=S.bookings.filter(b=>b.phone===ph||b.phone===ph.replace(/\s/g,''));
+  document.getElementById('my-phone-lbl').textContent=ph;
+  const el=document.getElementById('my-bk-list');
+  if(!myBks.length){
+    el.innerHTML='<div style="text-align:center;padding:30px;color:var(--tx3)"><div style="font-size:36px;margin-bottom:10px;opacity:.3">📋</div><div>Бронирований по этому номеру не найдено</div></div>';
+  } else {
+    const sl={new:'Заявка',upcoming:'Подтверждено',active:'Вы здесь',completed:'Завершено',cancelled:'Отменено'};
+    const sc={new:'bs-new',upcoming:'bs-upcoming',active:'bs-active',completed:'bs-completed',cancelled:'bs-cancelled'};
+    const stripeC={new:'#3dbdb5',upcoming:'var(--acc)',active:'var(--grn)',completed:'var(--tx4)',cancelled:'var(--red)'};
+    el.innerHTML=myBks.map(b=>{
+      const n=days(b.ci,b.co),room=S.rooms.find(r=>r.id===b.room);
+      const mySvcs=S.svcBookings.filter(s=>s.guest===b.guestName);
+      return`<div class="bk-item">
+        <div class="bk-stripe" style="background:${stripeC[b.status]}"></div>
+        <div style="padding-left:10px">
+          <div class="bk-head">
+            <div><div class="bk-room">🏠 ${room?`Номер ${room.num} · ${room.type}`:'Номер'}</div><div class="bk-dates">${fmt(b.ci)} — ${fmt(b.co)} · ${n} ночей</div></div>
+            <span class="bk-badge ${sc[b.status]||'bs-completed'}">${sl[b.status]||b.status}</span>
+          </div>
+          ${b.notes?`<div style="font-size:12px;color:var(--tx3);margin-bottom:6px">💬 ${b.notes}</div>`:''}
+          ${mySvcs.length?`<div style="margin-bottom:8px">${mySvcs.map(s=>{const sv=S.services.find(x=>x.id===s.svcId);return sv?`<span class="svc-tag">${sv.icon} ${sv.name} ${s.dur}ч.</span>`:''}).join('')}</div>`:''}
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:11.5px;color:var(--tx3)">Код: ЗАЯ-${String(b.id).padStart(4,'0')}</div>
+            <div class="bk-price">${(n*b.price).toLocaleString('ru')}₽</div>
+          </div>
+        </div></div>`;
+    }).join('');
+  }
+  document.getElementById('phone-gate').classList.add('hidden');
+  document.getElementById('my-bk-results').classList.remove('hidden');
+}
+function resetPhoneGate(){
+  document.getElementById('phone-gate').classList.remove('hidden');
+  document.getElementById('my-bk-results').classList.add('hidden');
+  document.getElementById('my-phone').value='';
+}
+
+// ─── REVIEWS ───
+let curStar=0;
+const starLabels=['','Плохо','Неплохо','Хорошо','Отлично','Превосходно!'];
+function setStar(n){
+  curStar=n;
+  document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('lit',i<n));
+  document.getElementById('star-lbl').textContent=starLabels[n];
+}
+function submitReview(){
+  const name=document.getElementById('rv-name').value.trim(),text=document.getElementById('rv-text').value.trim();
+  if(!name){showToast('⚠️ Введите имя');return;}
+  if(!curStar){showToast('⚠️ Выберите оценку');return;}
+  if(text.length<10){showToast('⚠️ Напишите немного больше');return;}
+  loadS();
+  S.reviews.push({id:S.nid.rev++,name,phone:document.getElementById('rv-phone').value,rating:curStar,text,date:today(),reply:''});
+  saveS();
+  ['rv-name','rv-phone','rv-text'].forEach(i=>document.getElementById(i).value='');
+  setStar(0);curStar=0;
+  showToast('✅ Спасибо за отзыв!');
+  renderPubReviews();
+}
+function renderPubReviews(){
+  loadS();
+  const list=(S.reviews||[]).filter(r=>r.text);
+  const el=document.getElementById('pub-reviews');
+  if(!list.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--tx3);font-size:13px">Пока нет отзывов. Будьте первым!</div>';return;}
+  el.innerHTML=[...list].reverse().map(r=>`
+    <div style="padding:12px 0;border-bottom:1px solid var(--brd)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div style="font-weight:700;font-size:13px">${r.name}</div>
+        <div style="font-size:11px;color:var(--tx3)">${fmtS(r.date)}</div>
+      </div>
+      <div style="color:var(--gold2);font-size:14px;margin:4px 0">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+      <div style="font-size:13px;color:var(--tx2);line-height:1.5">${r.text}</div>
+      ${r.reply?`<div style="background:var(--s2);border-radius:9px;padding:9px 12px;margin-top:8px;border-left:3px solid var(--acc3)"><div style="font-size:10px;font-weight:700;color:var(--acc2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Ответ</div><div style="font-size:12.5px;color:var(--tx2)">${r.reply}</div></div>`:''}
+    </div>`).join('');
+}
+
+// ─── INIT ───
+function init(){
+  loadS();initCal();renderCal();renderPubReviews();
+}
+init();
+</script>
+</body>
+</html>
