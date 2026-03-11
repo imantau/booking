@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0d1117">
+<meta name="mobile-web-app-capable" content="yes">
+<title>УсадьбаPRO — Админ</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117;--s1:#161b22;--s2:#1e2730;--s3:#273040;
+  --brd:rgba(255,255,255,.07);
+  --acc:#c8965a;--acc2:#e8b87a;--acc3:#f5d4a0;
+  --grn:#3fb97a;--red:#e05252;--org:#e09c3c;--blu:#4a9fd4;--pur:#9b7fd4;--tea:#3dbdb5;
+  --txt:#eef2f7;--tx2:#8b9ab0;--tx3:#4a5a70;
+  --r:14px; --sh:0 4px 24px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;padding-bottom:80px}
+
+/* LOGIN */
+#login-screen{
+  position:fixed;inset:0;background:var(--bg);z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  background-image:radial-gradient(ellipse at 30% 20%, rgba(200,150,90,.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(74,159,212,.06) 0%, transparent 50%);
+}
+.login-box{background:var(--s1);border:1px solid var(--brd);border-radius:22px;padding:36px 28px;width:calc(100% - 40px);max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-logo .icon{font-size:48px;margin-bottom:8px}
+.login-logo .title{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--acc2);font-weight:600}
+.login-logo .sub{font-size:12px;color:var(--tx3);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px}
+.login-hint{font-size:12px;color:var(--tx3);text-align:center;margin-top:12px}
+
+/* HEADER */
+.hdr{
+  background:var(--s1);padding:14px 16px 12px;
+  position:sticky;top:0;z-index:100;
+  border-bottom:1px solid var(--brd);
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 2px 20px rgba(0,0,0,.4)
+}
+.hdr-logo{display:flex;align-items:center;gap:9px}
+.hdr-icon{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--acc),#8a5a20);display:flex;align-items:center;justify-content:center;font-size:16px}
+.hdr-title{font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--acc2);font-weight:600}
+.hdr-sub{font-size:10px;color:var(--tx3);letter-spacing:.8px;text-transform:uppercase}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.badge-admin{background:rgba(200,150,90,.15);color:var(--acc);border:1px solid rgba(200,150,90,.3);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700}
+
+/* NAV */
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--brd);display:flex;z-index:200;box-shadow:0 -4px 24px rgba(0,0,0,.5)}
+.nb{flex:1;padding:9px 4px 12px;background:none;border:none;cursor:pointer;color:var(--tx3);font-size:9px;font-family:'Jost',sans-serif;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px;letter-spacing:.5px;text-transform:uppercase;transition:color .2s}
+.nb.active{color:var(--acc)}
+.nb svg{width:20px;height:20px}
+
+/* PAGES */
+.page{display:none;padding:12px 14px;animation:fu .22s ease}
+.page.active{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.sbox{background:var(--s1);border-radius:11px;padding:12px 10px;border:1px solid var(--brd);text-align:center}
+.snum{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;line-height:1}
+.slbl{font-size:9.5px;color:var(--tx3);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+
+/* CHESS BOARD */
+.chess-wrap{background:var(--s1);border-radius:var(--r);border:1px solid var(--brd);overflow:hidden;margin-bottom:12px}
+.chess-controls{padding:12px 14px 8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--brd)}
+.chess-title{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--acc2);font-weight:600;margin-right:auto}
+.month-nav{display:flex;align-items:center;gap:8px}
+.mnbtn{background:var(--s2);border:1px solid var(--brd);border-radius:8px;color:var(--txt);cursor:pointer;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.month-lbl{font-size:13px;font-weight:600;color:var(--txt);min-width:110px;text-align:center}
+
+.chess-legend{display:flex;gap:12px;padding:8px 14px;border-bottom:1px solid var(--brd);flex-wrap:wrap}
+.cl-item{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--tx2)}
+.cl-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+.chess-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.chess-table{border-collapse:collapse;min-width:100%}
+.chess-table th{
+  background:var(--s2);padding:6px 3px;
+  font-size:9.5px;font-weight:700;color:var(--tx3);
+  text-align:center;min-width:30px;position:sticky;top:0;z-index:10;
+  border-bottom:1px solid var(--brd);white-space:nowrap;
+  letter-spacing:.3px;text-transform:uppercase;
+}
+.chess-table .th-room{
+  position:sticky;left:0;z-index:20;background:var(--s2);
+  min-width:70px;max-width:70px;text-align:left;padding-left:10px;
+  border-right:1px solid var(--brd);
+}
+.chess-table td{
+  padding:3px 2px;text-align:center;border:1px solid rgba(255,255,255,.03);
+  font-size:9px;height:36px;cursor:pointer;transition:filter .15s;vertical-align:middle;
+}
+.chess-table td:hover{filter:brightness(1.3)}
+.chess-table .td-room{
+  position:sticky;left:0;background:var(--s2);
+  border-right:1px solid var(--brd);z-index:5;
+  text-align:left;padding-left:10px;cursor:default;
+}
+.td-room:hover{filter:none!important}
+.room-label{font-size:11px;font-weight:700;color:var(--txt)}
+.room-type-lbl{font-size:9px;color:var(--tx3);font-weight:500}
+
+.cell-free{background:rgba(63,185,122,.07)}
+.cell-occupied{position:relative}
+.cell-start{border-radius:6px 0 0 6px}
+.cell-end{border-radius:0 6px 6px 0}
+.cell-mid{}
+.cell-today{outline:2px solid rgba(200,150,90,.5);outline-offset:-2px}
+.cell-past{background:rgba(255,255,255,.02);opacity:.6}
+.cell-name{font-size:8.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:28px;margin:0 auto;color:#fff}
+.cell-cleaning{background:rgba(224,156,60,.12)}
+
+/* CARDS */
+.card{background:var(--s1);border-radius:var(--r);padding:14px;margin-bottom:10px;border:1px solid var(--brd);box-shadow:var(--sh)}
+.ctitle{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--acc2);margin-bottom:12px;font-weight:600}
+
+/* ITEMS */
+.item{background:var(--s2);border-radius:11px;padding:12px 13px;margin-bottom:7px;cursor:pointer;transition:background .15s;border:1px solid var(--brd);position:relative;overflow:hidden}
+.item:active{background:var(--s3)}
+.stripe{position:absolute;left:0;top:0;bottom:0;width:3px}
+.irow{display:flex;align-items:center;justify-content:space-between}
+.iname{font-weight:600;font-size:14px}
+.isub{font-size:11.5px;color:var(--tx3);margin-top:4px}
+.iprice{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--acc);font-weight:700}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:9.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap}
+.bg-grn{background:rgba(63,185,122,.12);color:var(--grn);border:1px solid rgba(63,185,122,.2)}
+.bg-red{background:rgba(224,82,82,.12);color:var(--red);border:1px solid rgba(224,82,82,.2)}
+.bg-org{background:rgba(224,156,60,.12);color:var(--org);border:1px solid rgba(224,156,60,.2)}
+.bg-blu{background:rgba(74,159,212,.12);color:var(--blu);border:1px solid rgba(74,159,212,.2)}
+.bg-acc{background:rgba(200,150,90,.12);color:var(--acc);border:1px solid rgba(200,150,90,.2)}
+.bg-pur{background:rgba(155,127,212,.12);color:var(--pur);border:1px solid rgba(155,127,212,.2)}
+.bg-new{background:rgba(61,189,181,.12);color:var(--tea);border:1px solid rgba(61,189,181,.2)}
+
+/* BUTTONS */
+.btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 16px;border-radius:10px;font-family:'Jost',sans-serif;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .18s;width:100%}
+.btn-p{background:linear-gradient(135deg,var(--acc),#7a4a10);color:#fff;box-shadow:0 3px 14px rgba(200,150,90,.3)}
+.btn-p:active{transform:scale(.97)}
+.btn-g{background:linear-gradient(135deg,var(--grn),#1a8040);color:#fff}
+.btn-o{background:transparent;color:var(--acc);border:1.5px solid rgba(200,150,90,.35)}
+.btn-d{background:rgba(224,82,82,.1);color:var(--red);border:1.5px solid rgba(224,82,82,.22)}
+.btn-ghost{background:var(--s3);color:var(--tx2);border:1px solid var(--brd)}
+.btn-sm{padding:7px 13px;font-size:12px;border-radius:8px;width:auto}
+.btn-new{background:rgba(61,189,181,.12);color:var(--tea);border:1.5px solid rgba(61,189,181,.25)}
+
+/* MODAL */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:500;display:none;align-items:flex-end;backdrop-filter:blur(5px)}
+.mbg.open{display:flex}
+.modal{background:var(--s1);border-radius:22px 22px 0 0;width:100%;padding:22px 18px 36px;max-height:92vh;overflow-y:auto;border-top:1px solid rgba(200,150,90,.15);animation:su .28s cubic-bezier(.22,.61,.36,1)}
+@keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mtitle{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--acc2);margin-bottom:18px;font-weight:600;display:flex;align-items:center;justify-content:space-between}
+.mclose{background:var(--s2);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;color:var(--tx3);font-size:16px;display:flex;align-items:center;justify-content:center}
+
+/* FORM */
+.fg{margin-bottom:12px}
+.fl{font-size:10.5px;font-weight:700;color:var(--tx3);margin-bottom:5px;display:block;letter-spacing:.7px;text-transform:uppercase}
+.fi{width:100%;background:var(--s2);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:11px 13px;color:var(--txt);font-family:'Jost',sans-serif;font-size:14px;outline:none;transition:border .18s;-webkit-appearance:none}
+.fi:focus{border-color:rgba(200,150,90,.45)}
+.fi option{background:var(--s2)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+
+/* TABS */
+.tabs{display:flex;gap:7px;margin-bottom:11px;overflow-x:auto;padding-bottom:2px}
+.tab{padding:7px 14px;border-radius:20px;border:none;background:var(--s2);color:var(--tx3);font-family:'Jost',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .18s}
+.tab.active{background:var(--acc);color:#0d1117}
+
+/* SEARCH */
+.srch{background:var(--s2);border:1px solid var(--brd);border-radius:11px;padding:10px 12px;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.srch input{background:none;border:none;color:var(--txt);font-family:'Jost',sans-serif;font-size:14px;flex:1;outline:none}
+.srch input::placeholder{color:var(--tx3)}
+
+/* FAB */
+.fab{position:fixed;bottom:86px;right:15px;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--acc),#7a4a10);border:none;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(200,150,90,.4);z-index:150;font-size:26px;color:#fff;transition:transform .18s}
+.fab:active{transform:scale(.91)}
+
+/* INFO ROWS */
+.ir{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--brd)}
+.ir:last-child{border-bottom:none}
+.il{font-size:11px;color:var(--tx3);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.iv{font-size:13.5px;color:var(--txt);font-weight:500;text-align:right;max-width:60%}
+
+/* MISC */
+.div{height:1px;background:var(--brd);margin:11px 0}
+.slbl{font-size:10.5px;font-weight:700;color:var(--tx3);letter-spacing:.8px;text-transform:uppercase;margin:12px 0 8px;display:flex;align-items:center;gap:7px}
+.slbl::after{content:'';flex:1;height:1px;background:var(--brd)}
+.empty{text-align:center;padding:36px 20px;color:var(--tx3)}
+.ei{font-size:42px;margin-bottom:10px;opacity:.3}
+.et{font-size:13px;font-weight:500}
+.prog{height:5px;background:var(--s3);border-radius:10px;overflow:hidden;margin-top:7px}
+.prog-f{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .4s}
+.toast{position:fixed;top:76px;left:50%;transform:translateX(-50%);background:var(--s3);color:var(--txt);padding:10px 18px;border-radius:28px;font-size:12.5px;font-weight:600;z-index:1000;display:none;box-shadow:var(--sh);border:1px solid rgba(200,150,90,.2);white-space:nowrap}
+.toast.show{display:block;animation:ti .22s ease}
+@keyframes ti{from{opacity:0;top:65px}to{opacity:1;top:76px}}
+
+/* ROOM GRID */
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rcell{border-radius:12px;padding:13px 8px;text-align:center;border:2px solid transparent;cursor:pointer;transition:all .18s;background:var(--s2)}
+.rcell.occupied{border-color:var(--red);background:rgba(224,82,82,.07)}
+.rcell.free{border-color:var(--grn);background:rgba(63,185,122,.07)}
+.rcell.cleaning{border-color:var(--org);background:rgba(224,156,60,.07)}
+.rnum{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:700}
+.rtype{font-size:9px;color:var(--tx3);font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-top:1px}
+.rst{font-size:10px;font-weight:700;margin-top:5px}
+.occupied .rst{color:var(--red)}.free .rst{color:var(--grn)}.cleaning .rst{color:var(--org)}
+
+/* SVC GRID */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.scard{background:var(--s2);border-radius:12px;padding:15px 12px;border:1px solid var(--brd);cursor:pointer;transition:all .18s;text-align:center}
+.scard:active{transform:scale(.97)}
+.scard.booked{border-color:var(--org)}
+.sico{font-size:30px;margin-bottom:6px}
+.sname{font-weight:700;font-size:13px}
+.sprice{font-size:10.5px;color:var(--tx3);margin-top:3px}
+.savail{font-size:9.5px;font-weight:700;margin-top:5px}
+.scard.booked .savail{color:var(--org)}.scard:not(.booked) .savail{color:var(--grn)}
+
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px}
+.chip{padding:6px 11px;border-radius:20px;font-size:11.5px;font-weight:600;background:var(--s3);color:var(--tx3);cursor:pointer;border:1px solid var(--brd);transition:all .15s}
+.chip.sel{background:var(--acc);color:#0d1117;border-color:var(--acc)}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:10px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="icon">🏡</div>
+      <div class="title">УсадьбаPRO</div>
+      <div class="sub">Панель администратора</div>
+    </div>
+    <div class="fg"><label class="fl">Пароль</label>
+      <input class="fi" type="password" id="pw-input" placeholder="Введите пароль" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn btn-p" onclick="doLogin()" style="margin-top:4px">Войти</button>
+    <div class="login-hint">Пароль по умолчанию: <b>admin123</b><br>Можно изменить в настройках</div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-logo">
+    <div class="hdr-icon">🏡</div>
+    <div><div class="hdr-title">УсадьбаPRO</div><div class="hdr-sub">Администратор</div></div>
+  </div>
+  <div class="hdr-right">
+    <span class="badge-admin">ADMIN</span>
+    <button class="btn btn-ghost btn-sm" onclick="doLogout()" style="padding:5px 10px;font-size:11px">Выйти</button>
+  </div>
+</header>
+
+<div class="toast" id="toast"></div>
+
+<!-- PAGES -->
+
+<!-- DASHBOARD -->
+<div class="page active" id="p-dash">
+  <div class="stats-row">
+    <div class="sbox"><div class="snum" id="s-occ" style="color:var(--red)">0</div><div class="slbl">Занято</div></div>
+    <div class="sbox"><div class="snum" id="s-free" style="color:var(--grn)">0</div><div class="slbl">Свободно</div></div>
+    <div class="sbox"><div class="snum" id="s-new" style="color:var(--tea)">0</div><div class="slbl">Новые</div></div>
+    <div class="sbox"><div class="snum" id="s-rev" style="color:var(--acc)">0</div><div class="slbl">₽ мес.</div></div>
+  </div>
+
+  <!-- CHESS MINI PREVIEW -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="padding:12px 14px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--brd)">
+      <span class="ctitle" style="margin:0">♟ Шахматка — <span id="chess-month-lbl"></span></span>
+      <div style="display:flex;gap:6px">
+        <button class="mnbtn" onclick="chessMonth(-1)">‹</button>
+        <button class="mnbtn" onclick="chessMonth(1)">›</button>
+      </div>
+    </div>
+    <div style="padding:8px 10px;display:flex;gap:10px;border-bottom:1px solid var(--brd);flex-wrap:wrap">
+      <span class="cl-item"><span class="cl-dot" style="background:var(--grn)"></span>Свободно</span>
+      <span class="cl-item"><span class="cl-dot" style="background:rgba(63,185,122,.07);border:1px solid var(--grn)"></span>Брон. (клиент)</span>
+      <span class="cl-item"><span class="cl-dot" style="background:var(--red)"></span>Занят (Admin)</span>
+      <span class="cl-item"><span class="cl-dot" style="background:var(--blu)"></span>Ожидается</span>
+      <span class="cl-item"><span class="cl-dot" style="background:var(--org)"></span>Уборка</span>
+    </div>
+    <div class="chess-table-wrap" id="chess-container"></div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🔔 Требуют внимания</div>
+    <div id="attention-list"></div>
+  </div>
+</div>
+
+<!-- BOOKINGS -->
+<div class="page" id="p-bookings">
+  <div class="tabs" id="btabs">
+    <button class="tab active" onclick="fbk('all',this)">Все</button>
+    <button class="tab" onclick="fbk('new',this)">🆕 Новые</button>
+    <button class="tab" onclick="fbk('active',this)">Активные</button>
+    <button class="tab" onclick="fbk('upcoming',this)">Будущие</button>
+    <button class="tab" onclick="fbk('completed',this)">Завершённые</button>
+  </div>
+  <div class="srch">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" placeholder="Поиск по имени, номеру..." id="bsrch" oninput="renderBookings()">
+  </div>
+  <div id="blist"></div>
+</div>
+
+<!-- SERVICES -->
+<div class="page" id="p-svc">
+  <div class="tabs">
+    <button class="tab active" onclick="fSvcTab('bk',this)">Брони услуг</button>
+    <button class="tab" onclick="fSvcTab('cat',this)">Каталог</button>
+  </div>
+  <div id="sv-bk">
+    <div class="srch">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Поиск..." id="svsrch" oninput="renderSvcBk()">
+    </div>
+    <div id="svbklist"></div>
+  </div>
+  <div id="sv-cat" style="display:none">
+    <div class="sgrid" id="svcatgrid"></div>
+    <div style="margin-top:10px"><button class="btn btn-o" onclick="openAddSvc()">＋ Добавить услугу</button></div>
+  </div>
+</div>
+
+<!-- ROOMS -->
+<div class="page" id="p-rooms">
+  <div style="display:flex;gap:8px;margin-bottom:11px;flex-wrap:wrap;align-items:center">
+    <span style="font-size:11px;color:var(--tx3);display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:var(--grn);display:inline-block"></span>Свободен</span>
+    <span style="font-size:11px;color:var(--tx3);display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:var(--red);display:inline-block"></span>Занят</span>
+    <span style="font-size:11px;color:var(--tx3);display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:var(--org);display:inline-block"></span>Уборка</span>
+    <button class="btn btn-p btn-sm" style="margin-left:auto" onclick="openAddRoom()">＋ Номер</button>
+  </div>
+  <div class="rgrid" id="rgrid"></div>
+</div>
+
+<!-- GUESTS -->
+<div class="page" id="p-guests">
+  <div class="srch">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" placeholder="Поиск гостей..." id="gsrch" oninput="renderGuests()">
+  </div>
+  <div id="glist"></div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="p-settings">
+  <div class="card">
+    <div class="ctitle">🔑 Безопасность</div>
+    <div class="fg"><label class="fl">Новый пароль</label><input class="fi" type="password" id="new-pw" placeholder="Минимум 4 символа"></div>
+    <div class="fg"><label class="fl">Подтвердить</label><input class="fi" type="password" id="conf-pw" placeholder="Повторите пароль"></div>
+    <button class="btn btn-p" onclick="changePw()">Сменить пароль</button>
+  </div>
+  <div class="card">
+    <div class="ctitle">📱 Клиентская версия</div>
+    <p style="font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:12px">Файл <b>client.html</b> — это версия для клиентов. Они видят только свободные даты и могут отправить заявку на бронь. Заявки приходят к вам в раздел <b>«Брони» → «Новые»</b>.</p>
+    <div style="background:var(--s2);border-radius:10px;padding:12px;font-size:12px;color:var(--tx2);font-family:monospace">client.html</div>
+  </div>
+  <div class="card">
+    <div class="ctitle">🗑 Данные</div>
+    <button class="btn btn-d" onclick="resetData()">Сбросить все данные</button>
+  </div>
+</div>
+
+
+<!-- REVIEWS -->
+<div class="page" id="p-reviews">
+  <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
+    <div style="font-size:22px;font-family:Cormorant Garamond,serif;color:var(--acc2);font-weight:600">Отзывы гостей</div>
+    <span id="rev-avg-badge" class="badge bg-acc" style="margin-left:auto"></span>
+  </div>
+  <div id="rev-list"></div>
+</div>
+</div><!-- /app -->
+
+<!-- NAV -->
+<nav class="nav" id="nav" style="display:none">
+  <button class="nb active" onclick="go('dash',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Главная</span></button>
+  <button class="nb" onclick="go('bookings',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Брони</span></button>
+  <button class="nb" onclick="go('svc',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><span>Услуги</span></button>
+  <button class="nb" onclick="go('rooms',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Номера</span></button>
+  <button class="nb" onclick="go('guests',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Гости</span></button>
+<button class="nb" onclick="go('reviews',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Отзывы</span></button>
+  <button class="nb" onclick="go('settings',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Настройки</span></button>
+</nav>
+<button class="fab" id="fab" onclick="doFab()">＋</button>
+
+<!-- MODALS -->
+<!-- NEW BOOKING ADMIN -->
+<div class="mbg" id="m-bk"><div class="modal">
+  <div class="mtitle">📅 Новое бронирование <button class="mclose" onclick="cm('m-bk')">✕</button></div>
+  <div class="fg"><label class="fl">ФИО гостя</label><input class="fi" id="b-name" placeholder="Иванов Иван"></div>
+  <div class="fg"><label class="fl">Телефон</label><input class="fi" id="b-phone" type="tel" placeholder="+7 900 000-00-00"></div>
+  <div class="fr"><div class="fg"><label class="fl">Заезд</label><input class="fi" id="b-ci" type="date"></div><div class="fg"><label class="fl">Выезд</label><input class="fi" id="b-co" type="date"></div></div>
+  <div class="fr"><div class="fg"><label class="fl">Номер</label><select class="fi" id="b-room"></select></div><div class="fg"><label class="fl">Гостей</label><input class="fi" id="b-guests" type="number" value="1" min="1"></div></div>
+  <div class="fr"><div class="fg"><label class="fl">Цена/ночь ₽</label><input class="fi" id="b-price" type="number" placeholder="2500"></div><div class="fg"><label class="fl">Аванс ₽</label><input class="fi" id="b-adv" type="number" placeholder="0" value="0"></div></div>
+  <div class="fg"><label class="fl">Примечания</label><input class="fi" id="b-notes" placeholder="Пожелания..."></div>
+  <div style="display:flex;gap:9px;margin-top:4px"><button class="btn btn-ghost" onclick="cm('m-bk')">Отмена</button><button class="btn btn-p" onclick="saveBooking(false)">Сохранить</button></div>
+</div></div>
+
+<!-- BOOKING DETAIL -->
+<div class="mbg" id="m-bd"><div class="modal">
+  <div class="mtitle" id="bd-t">Бронирование <button class="mclose" onclick="cm('m-bd')">✕</button></div>
+  <div id="bd-body"></div>
+  <div style="display:flex;gap:7px;margin-top:13px;flex-wrap:wrap" id="bd-acts"></div>
+</div></div>
+
+<!-- SVC BOOKING -->
+<div class="mbg" id="m-sbk"><div class="modal">
+  <div class="mtitle">🎯 Бронь услуги <button class="mclose" onclick="cm('m-sbk')">✕</button></div>
+  <div class="fg"><label class="fl">Услуга</label><select class="fi" id="sb-svc"></select></div>
+  <div class="fg"><label class="fl">Гость</label><input class="fi" id="sb-g" placeholder="Имя или телефон"></div>
+  <div class="fr"><div class="fg"><label class="fl">Дата</label><input class="fi" id="sb-d" type="date"></div><div class="fg"><label class="fl">Время</label><input class="fi" id="sb-t" type="time" value="10:00"></div></div>
+  <div class="fg"><label class="fl">Длительность (ч)</label><input class="fi" id="sb-dur" type="number" value="2" min="1"></div>
+  <div class="fg"><label class="fl">Примечания</label><input class="fi" id="sb-n"></div>
+  <div style="display:flex;gap:9px;margin-top:4px"><button class="btn btn-ghost" onclick="cm('m-sbk')">Отмена</button><button class="btn btn-p" onclick="saveSvcBk()">Забронировать</button></div>
+</div></div>
+
+<!-- SVC DETAIL -->
+<div class="mbg" id="m-sd"><div class="modal">
+  <div class="mtitle" id="sd-t"> <button class="mclose" onclick="cm('m-sd')">✕</button></div>
+  <div id="sd-body"></div>
+  <div style="display:flex;gap:7px;margin-top:13px;flex-wrap:wrap" id="sd-acts"></div>
+</div></div>
+
+<!-- ADD SVC -->
+<div class="mbg" id="m-asvc"><div class="modal">
+  <div class="mtitle">✨ Новая услуга <button class="mclose" onclick="cm('m-asvc')">✕</button></div>
+  <div class="fg"><label class="fl">Название</label><input class="fi" id="as-n" placeholder="Баня, Катер..."></div>
+  <div class="fg"><label class="fl">Иконка (эмодзи)</label><input class="fi" id="as-i" placeholder="🧖" style="font-size:20px">
+    <div class="chips" style="margin-top:7px">
+      <span class="chip" onclick="pi(this,'🧖')">🧖 Баня</span><span class="chip" onclick="pi(this,'🚤')">🚤 Катер</span><span class="chip" onclick="pi(this,'🎱')">🎱 Бильярд</span><span class="chip" onclick="pi(this,'🏊')">🏊 Бассейн</span><span class="chip" onclick="pi(this,'🎣')">🎣 Рыбалка</span><span class="chip" onclick="pi(this,'🍖')">🍖 Мангал</span><span class="chip" onclick="pi(this,'⛵')">⛵ Яхта</span><span class="chip" onclick="pi(this,'🎤')">🎤 Каране</span><span class="chip" onclick="pi(this,'🏇')">🏇 Кони</span><span class="chip" onclick="pi(this,'🎯')">🎯 Тир</span>
+    </div>
+  </div>
+  <div class="fr"><div class="fg"><label class="fl">Цена ₽</label><input class="fi" id="as-p" type="number" placeholder="500"></div><div class="fg"><label class="fl">Тип</label><select class="fi" id="as-pt"><option value="hour">За час</option><option value="session">За сеанс</option><option value="day">За день</option><option value="person">За чел.</option></select></div></div>
+  <div class="fg"><label class="fl">Описание</label><input class="fi" id="as-d" placeholder="Краткое описание..."></div>
+  <div style="display:flex;gap:9px;margin-top:4px"><button class="btn btn-ghost" onclick="cm('m-asvc')">Отмена</button><button class="btn btn-p" onclick="saveSvc()">Добавить</button></div>
+</div></div>
+
+<!-- ADD ROOM -->
+<div class="mbg" id="m-ar"><div class="modal">
+  <div class="mtitle">🏠 Новый номер <button class="mclose" onclick="cm('m-ar')">✕</button></div>
+  <div class="fr"><div class="fg"><label class="fl">Номер/Название</label><input class="fi" id="ar-n" placeholder="7 или «Люкс»"></div><div class="fg"><label class="fl">Тип</label><select class="fi" id="ar-t"><option>Стандарт</option><option>Улучшенный</option><option>Семейный</option><option>Люкс</option><option>Коттедж</option><option>Домик</option><option>Другой</option></select></div></div>
+  <div class="fr"><div class="fg"><label class="fl">Кроватей</label><input class="fi" id="ar-b" type="number" value="2" min="1"></div><div class="fg"><label class="fl">Цена/ночь ₽</label><input class="fi" id="ar-p" type="number" placeholder="2500"></div></div>
+  <div class="fg"><label class="fl">Описание</label><input class="fi" id="ar-d" placeholder="Вид на лес, джакузи..."></div>
+  <div style="display:flex;gap:9px;margin-top:4px"><button class="btn btn-ghost" onclick="cm('m-ar')">Отмена</button><button class="btn btn-p" onclick="saveRoom()">Добавить</button></div>
+</div></div>
+
+<!-- ROOM DETAIL -->
+<div class="mbg" id="m-rd"><div class="modal">
+  <div class="mtitle" id="rd-t">Номер <button class="mclose" onclick="cm('m-rd')">✕</button></div>
+  <div id="rd-body"></div>
+  <div style="display:flex;gap:7px;margin-top:13px;flex-wrap:wrap" id="rd-acts"></div>
+</div></div>
+
+<!-- GUEST DETAIL -->
+<div class="mbg" id="m-gd"><div class="modal">
+  <div class="mtitle">👤 Профиль гостя <button class="mclose" onclick="cm('m-gd')">✕</button></div>
+  <div id="gd-body"></div>
+  <div style="display:flex;gap:7px;margin-top:12px"><button class="btn btn-d" id="g-del">Удалить</button></div>
+</div></div>
+
+<script>
+// ═══════════════ STATE ═══════════════
+const DEF = {
+  pw:'admin123',
+  rooms:[
+    {id:1,num:'1',type:'Стандарт',beds:1,price:2000,desc:'',status:'free'},
+    {id:2,num:'2',type:'Стандарт',beds:1,price:2000,desc:'',status:'free'},
+    {id:3,num:'3',type:'Улучшенный',beds:2,price:2800,desc:'Вид на лес',status:'occupied'},
+    {id:4,num:'4',type:'Люкс',beds:2,price:4500,desc:'Джакузи',status:'cleaning'},
+    {id:5,num:'5',type:'Семейный',beds:3,price:3500,desc:'',status:'free'},
+    {id:6,num:'6',type:'Коттедж',beds:4,price:6000,desc:'Отдельный домик',status:'free'},
+  ],
+  services:[
+    {id:1,name:'Баня',icon:'🧖',price:500,ptype:'hour',desc:'Русская баня на дровах'},
+    {id:2,name:'Катер',icon:'🚤',price:1500,ptype:'hour',desc:'Прогулка по реке'},
+    {id:3,name:'Бильярд',icon:'🎱',price:400,ptype:'hour',desc:'Профессиональный стол'},
+    {id:4,name:'Мангал',icon:'🍖',price:800,ptype:'session',desc:'С дровами'},
+  ],
+  bookings:[
+    {id:1,guestName:'Смирнов Алексей',phone:'+7 905 111-22-33',room:3,ci:'2025-07-08',co:'2025-07-14',guests:2,price:2800,advance:5000,notes:'С ребёнком',status:'active',paid:false,source:'admin',created:'2025-07-07'},
+    {id:2,guestName:'Козлова Наталья',phone:'+7 916 222-33-44',room:4,ci:'2025-07-18',co:'2025-07-21',guests:1,price:4500,advance:0,notes:'VIP',status:'upcoming',paid:false,source:'admin',created:'2025-07-09'},
+    {id:3,guestName:'Онлайн-запрос',phone:'+7 922 333-44-55',room:1,ci:'2025-07-20',co:'2025-07-23',guests:2,price:2000,advance:0,notes:'Запрос с сайта',status:'new',paid:false,source:'client',created:'2025-07-10'},
+  ],
+  svcBookings:[
+    {id:1,svcId:1,guest:'Смирнов Алексей',date:'2025-07-10',time:'18:00',dur:3,notes:'',status:'confirmed',paid:false,created:'2025-07-09'},
+  ],
+  guests:[
+    {id:1,name:'Смирнов Алексей',phone:'+7 905 111-22-33',email:'alexey@mail.ru',doc:'4512 345678',source:'Авито',notes:'',created:'2025-05-10'},
+    {id:2,name:'Козлова Наталья',phone:'+7 916 222-33-44',email:'',doc:'',source:'Сайт',notes:'VIP',created:'2025-07-09'},
+  ],
+  reviews:[
+    {id:1,name:'Смирнов Алексей',phone:'+7 905 111-22-33',rating:5,text:'Отличный отдых! Баня — огонь, персонал внимательный. Обязательно вернёмся.',date:'2025-07-05',reply:'Алексей, спасибо! Ждём вас снова 🏡'},
+  ],
+  nid:{room:7,svc:5,bk:4,sbk:2,g:3,rev:2}
+};
+
+let S = JSON.parse(localStorage.getItem('ghpro_v2')||'null') || DEF;
+const save = () => localStorage.setItem('ghpro_v2', JSON.stringify(S));
+
+const today = () => new Date().toISOString().slice(0,10);
+const fmt = d => d ? new Date(d).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
+const days = (a,b) => Math.max(1,Math.round((new Date(b)-new Date(a))/86400000));
+const cm = id => document.getElementById(id).classList.remove('open');
+const om = id => document.getElementById(id).classList.add('open');
+const getRoom = id => S.rooms.find(r=>r.id===id);
+const getSvc = id => S.services.find(s=>s.id===id);
+const rname = id => { const r=getRoom(id); return r?`№${r.num} ${r.type}`:`№${id}`; };
+const ptL = {hour:'ч',session:'сеанс',day:'день',person:'чел'};
+
+function toast(msg) {
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+// ─── LOGIN ───
+function doLogin() {
+  const pw = document.getElementById('pw-input').value;
+  if (pw === S.pw) {
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.getElementById('nav').style.display='flex';
+    renderAll();
+  } else {
+    toast('❌ Неверный пароль');
+    document.getElementById('pw-input').value='';
+  }
+}
+function doLogout() {
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('nav').style.display='none';
+  document.getElementById('pw-input').value='';
+}
+function changePw() {
+  const np=document.getElementById('new-pw').value;
+  const cp=document.getElementById('conf-pw').value;
+  if(np.length<4){toast('⚠️ Минимум 4 символа');return;}
+  if(np!==cp){toast('⚠️ Пароли не совпадают');return;}
+  S.pw=np; save(); toast('✅ Пароль изменён');
+}
+function resetData() {
+  if(!confirm('Сбросить ВСЕ данные? Это нельзя отменить.')) return;
+  localStorage.removeItem('ghpro_v2');
+  S = JSON.parse(JSON.stringify(DEF));
+  save(); renderAll(); toast('🗑 Данные сброшены');
+}
+
+// ─── NAVIGATION ───
+let curPage='dash', curBF='all', curSvcTab='bk';
+
+function go(page, btn) {
+  if(page==='reviews'){render=function(){renderReviews();}}
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('p-'+page).classList.add('active');
+  btn.classList.add('active');
+  curPage=page; render(page);
+  const fab=document.getElementById('fab');
+  fab.style.display=['bookings','svc','rooms'].includes(page)?'flex':'none';
+}
+function render(p) {
+  if(p==='dash')renderDash();
+  if(p==='bookings')renderBookings();
+  if(p==='svc'){renderSvcBk();renderSvcCat();}
+  if(p==='rooms')renderRooms();
+  if(p==='guests')renderGuests();
+  if(p==='reviews')renderReviews();
+}
+function renderAll(){render('dash');}
+function doFab(){
+  if(curPage==='bookings')openBkModal();
+  if(curPage==='svc'){if(curSvcTab==='bk')openSvcBkModal();else openAddSvc();}
+  if(curPage==='rooms')openAddRoom();
+}
+
+// ─── CHESS BOARD ───
+let chessYear, chessMonth2;
+function initChess(){
+  const n=new Date(); chessYear=n.getFullYear(); chessMonth2=n.getMonth();
+}
+function chessMonth(d){
+  chessMonth2+=d;
+  if(chessMonth2>11){chessMonth2=0;chessYear++;}
+  if(chessMonth2<0){chessMonth2=11;chessYear--;}
+  renderChess();
+}
+function renderChess(){
+  const mn=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  const lbl=mn[chessMonth2]+' '+chessYear;
+  document.getElementById('chess-month-lbl').textContent=lbl;
+
+  const dInM=new Date(chessYear,chessMonth2+1,0).getDate();
+  const todayStr=today();
+  const bkColors=['#e05252','#c8965a','#9b7fd4','#3fb97a','#4a9fd4','#e09c3c','#3dbdb5'];
+
+  // build room→bookings map
+  const roomBkMap={};
+  S.rooms.forEach(r=>{roomBkMap[r.id]={};});
+  S.bookings.forEach((b,bi)=>{
+    if(b.status==='cancelled') return;
+    const color = b.source==='client' ? 'rgba(63,185,122,.55)' : (bkColors[bi%bkColors.length]);
+    const s=new Date(b.ci), e=new Date(b.co);
+    for(let d=new Date(s);d<e;d.setDate(d.getDate()+1)){
+      if(d.getFullYear()===chessYear&&d.getMonth()===chessMonth2){
+        const day=d.getDate();
+        roomBkMap[b.room]=roomBkMap[b.room]||{};
+        roomBkMap[b.room][day]={bk:b,color,isStart:d.getTime()===s.getTime(),isEnd:new Date(d.getTime()+86400000).getTime()===e.getTime()};
+      }
+    }
+  });
+  // room cleaning
+  const cleanRooms=new Set(S.rooms.filter(r=>r.status==='cleaning').map(r=>r.id));
+
+  // header
+  let hCells='<th class="th-room">Номер</th>';
+  for(let d=1;d<=dInM;d++){
+    const dateStr=`${chessYear}-${String(chessMonth2+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dow=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][new Date(dateStr).getDay()];
+    const isWE=['Сб','Вс'].includes(dow);
+    hCells+=`<th style="${isWE?'color:var(--acc2)':''}">${d}<br><span style="font-size:7px;opacity:.6">${dow}</span></th>`;
+  }
+
+  let rows='';
+  S.rooms.forEach(r=>{
+    let cells=`<td class="td-room"><div class="room-label">№${r.num}</div><div class="room-type-lbl">${r.type}</div></td>`;
+    for(let d=1;d<=dInM;d++){
+      const dateStr=`${chessYear}-${String(chessMonth2+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const isToday=dateStr===todayStr;
+      const isPast=dateStr<todayStr;
+      const cell=roomBkMap[r.id]?.[d];
+      let cls='';let style='';let content='';
+      if(cell){
+        const {bk,color,isStart,isEnd}=cell;
+        cls='cell-occupied'+(isStart?' cell-start':'')+(isEnd?' cell-end':' cell-mid');
+        style=`background:${color};`;
+        if(isStart) content=`<div class="cell-name" title="${bk.guestName}">${bk.guestName.split(' ')[0]}</div>`;
+      } else if(cleanRooms.has(r.id)&&isToday){
+        cls='cell-cleaning'; style='';
+      } else {
+        cls='cell-free'; style='';
+      }
+      if(isToday) cls+=' cell-today';
+      if(isPast&&!cell) cls+=' cell-past';
+      cells+=`<td class="${cls}" style="${style}" onclick="chessClick(${r.id},'${dateStr}')" title="${r.num} — ${dateStr}">${content}</td>`;
+    }
+    rows+=`<tr>${cells}</tr>`;
+  });
+
+
+  // Services rows in chess
+  if(S.services.length>0){
+    const ptLc={hour:'ч',session:'сеанс',day:'день',person:'чел'};
+    const svcMap={};
+    S.svcBookings.filter(b=>b.status!=='cancelled').forEach(b=>{
+      const dd=new Date(b.date);
+      if(dd.getFullYear()===chessYear&&dd.getMonth()===chessMonth2){
+        const dy=dd.getDate(),k=b.svcId+'_'+dy;
+        if(!svcMap[k])svcMap[k]=[];svcMap[k].push(b);
+      }
+    });
+    let sep='<tr style="background:var(--s3)"><td class="td-lbl" style="background:var(--s3)"><div class="room-label" style="color:var(--pur);font-size:9px">✨ УСЛУГИ</div></td>';
+    for(let d=1;d<=dInM;d++) sep+='<td style="background:var(--s3);height:4px;padding:0;cursor:default"></td>';
+    sep+='</tr>'; rows+=sep;
+    S.services.forEach(svc=>{
+      let cells='<td class="td-lbl" style="background:rgba(155,127,212,.04)"><div class="room-label" style="font-size:9.5px">'+svc.icon+' '+svc.name+'</div><div class="room-type-lbl">'+svc.price+'₽/'+ptLc[svc.ptype]+'</div></td>';
+      for(let d=1;d<=dInM;d++){
+        const ds=chessYear+'-'+String(chessMonth2+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+        const isT=ds===todayStr;
+        const bks=svcMap[svc.id+'_'+d]||[];
+        let st='background:rgba(155,127,212,.04);';
+        if(isT) st+='outline:2px solid rgba(200,150,90,.4);outline-offset:-2px;';
+        const cnt=bks.map(b=>'<span style="display:inline-block;background:var(--pur);color:#fff;border-radius:3px;padding:1px 3px;font-size:7px;font-weight:700;max-width:26px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+b.guest+' '+b.dur+'ч">'+b.guest.split(' ')[0]+'</span>').join('');
+        cells+='<td style="'+st+'" onclick="openSvcBkModal('+svc.id+')" title="'+svc.name+' '+ds+'">'+cnt+'</td>';
+      }
+      rows+='<tr>'+cells+'</tr>';
+    });
+  }
+
+  document.getElementById('chess-container').innerHTML=`<table class="chess-table"><thead><tr>${hCells}</tr></thead><tbody>${rows}</tbody></table>`;
+}
+function chessClick(roomId, dateStr){
+  const r=getRoom(roomId); if(!r) return;
+  const bk=S.bookings.find(b=>b.room===roomId&&dateStr>=b.ci&&dateStr<b.co&&b.status!=='cancelled');
+  if(bk){showBkDetail(bk.id);}
+  else{
+    // open new booking for this room/date
+    openBkModal(roomId, dateStr);
+  }
+}
+
+// ─── DASHBOARD ───
+function renderDash(){
+  if(chessYear===undefined) initChess();
+  renderChess();
+
+  const occ=S.bookings.filter(b=>b.status==='active').length;
+  const free=S.rooms.length-occ;
+  const newB=S.bookings.filter(b=>b.status==='new').length;
+  const mo=today().slice(0,7);
+  const rev=S.bookings.filter(b=>b.paid&&b.ci.startsWith(mo)).reduce((a,b)=>a+days(b.ci,b.co)*b.price,0);
+
+  document.getElementById('s-occ').textContent=occ;
+  document.getElementById('s-free').textContent=free;
+  document.getElementById('s-new').textContent=newB;
+  document.getElementById('s-rev').textContent=rev>=1000?Math.round(rev/1000)+'к':rev;
+
+  // attention
+  const attn=[];
+  S.bookings.filter(b=>b.status==='new').forEach(b=>attn.push({type:'new',bk:b}));
+  S.bookings.filter(b=>b.status==='active'&&b.co===today()).forEach(b=>attn.push({type:'checkout',bk:b}));
+  S.bookings.filter(b=>b.status==='upcoming'&&b.ci===today()).forEach(b=>attn.push({type:'checkin',bk:b}));
+  S.rooms.filter(r=>r.status==='cleaning').forEach(r=>attn.push({type:'clean',room:r}));
+
+  const el=document.getElementById('attention-list');
+  if(!attn.length){el.innerHTML='<div class="empty"><div class="ei">✅</div><div class="et">Всё под контролем</div></div>';return;}
+  el.innerHTML=attn.map(a=>{
+    if(a.type==='new') return `<div class="item" onclick="showBkDetail(${a.bk.id})"><span class="stripe" style="background:var(--tea)"></span><div style="padding-left:8px"><div class="irow"><div class="iname">🆕 Новая заявка</div><span class="badge bg-new">КЛИЕНТ</span></div><div class="isub">${a.bk.guestName} · ${rname(a.bk.room)} · ${fmt(a.bk.ci)}–${fmt(a.bk.co)}</div></div></div>`;
+    if(a.type==='checkout') return `<div class="item" onclick="showBkDetail(${a.bk.id})"><span class="stripe" style="background:var(--org)"></span><div style="padding-left:8px"><div class="irow"><div class="iname">🚪 Выезд сегодня</div><span class="badge bg-org">СЕГОДНЯ</span></div><div class="isub">${a.bk.guestName} · ${rname(a.bk.room)}</div></div></div>`;
+    if(a.type==='checkin') return `<div class="item" onclick="showBkDetail(${a.bk.id})"><span class="stripe" style="background:var(--grn)"></span><div style="padding-left:8px"><div class="irow"><div class="iname">🔑 Заезд сегодня</div><span class="badge bg-grn">СЕГОДНЯ</span></div><div class="isub">${a.bk.guestName} · ${rname(a.bk.room)}</div></div></div>`;
+    if(a.type==='clean') return `<div class="item" onclick="showRoomDetail(${a.room.id})"><span class="stripe" style="background:var(--org)"></span><div style="padding-left:8px"><div class="irow"><div class="iname">🧹 Нужна уборка</div><span class="badge bg-org">УБОРКА</span></div><div class="isub">${rname(a.room.id)}</div></div></div>`;
+    return '';
+  }).join('');
+}
+
+// ─── BOOKINGS ───
+function fbk(f,btn){
+  curBF=f;
+  document.querySelectorAll('#btabs .tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); renderBookings();
+}
+function renderBookings(){
+  const q=(document.getElementById('bsrch')?.value||'').toLowerCase();
+  const sl={new:'НОВАЯ',active:'ЗАСЕЛЁН',upcoming:'ЗАЕДЕТ',completed:'ВЫЕХАЛ',cancelled:'ОТМЕНЁН'};
+  const sc={new:'bg-new',active:'bg-grn',upcoming:'bg-blu',completed:'bg-acc',cancelled:'bg-red'};
+  const sc2={new:'var(--tea)',active:'var(--grn)',upcoming:'var(--blu)',completed:'var(--tx3)',cancelled:'var(--red)'};
+  let list=S.bookings.filter(b=>{
+    if(curBF!=='all'&&b.status!==curBF) return false;
+    if(q&&!b.guestName.toLowerCase().includes(q)&&!String(b.room).includes(q)) return false;
+    return true;
+  }).sort((a,b)=>b.id-a.id);
+  const el=document.getElementById('blist');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="ei">📅</div><div class="et">Нет бронирований</div></div>';return;}
+  el.innerHTML=list.map(b=>{
+    const n=days(b.ci,b.co);
+    return `<div class="item" onclick="showBkDetail(${b.id})">
+      <span class="stripe" style="background:${sc2[b.status]}"></span>
+      <div style="padding-left:8px">
+        <div class="irow"><div class="iname">${b.guestName} ${b.source==='client'?'<span style="font-size:10px;color:var(--tea)">●онлайн</span>':''}</div><span class="badge ${sc[b.status]}">${sl[b.status]||b.status}</span></div>
+        <div class="isub">${rname(b.room)} · ${fmt(b.ci)} – ${fmt(b.co)} (${n}н.)</div>
+        <div class="irow" style="margin-top:5px"><div style="font-size:11px;color:var(--tx3)">👥${b.guests}${b.notes?' · '+b.notes:''}</div><div class="iprice">${(n*b.price).toLocaleString('ru')}₽ ${b.paid?'✅':''}</div></div>
+      </div></div>`;
+  }).join('');
+}
+
+function openBkModal(preRoom, preDate){
+  ['b-name','b-phone','b-notes'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('b-ci').value=preDate||today();
+  document.getElementById('b-co').value='';
+  document.getElementById('b-guests').value=1;
+  document.getElementById('b-price').value='';
+  document.getElementById('b-adv').value=0;
+  const rooms=S.rooms;
+  document.getElementById('b-room').innerHTML=rooms.map(r=>`<option value="${r.id}" ${r.id===preRoom?'selected':''}>${r.num} – ${r.type} (${r.price}₽)</option>`).join('');
+  om('m-bk');
+}
+function saveBooking(isNew=false){
+  const name=document.getElementById('b-name').value.trim();
+  const ci=document.getElementById('b-ci').value;
+  const co=document.getElementById('b-co').value;
+  const room=parseInt(document.getElementById('b-room').value);
+  if(!name||!ci||!co||!room){toast('⚠️ Заполните обязательные поля');return;}
+  const st=isNew?'new':(ci<=today()?'active':'upcoming');
+  const b={id:S.nid.bk++,guestName:name,phone:document.getElementById('b-phone').value,
+    room,ci,co,guests:parseInt(document.getElementById('b-guests').value)||1,
+    price:parseInt(document.getElementById('b-price').value)||0,
+    advance:parseInt(document.getElementById('b-adv').value)||0,
+    notes:document.getElementById('b-notes').value,
+    status:st,paid:false,source:'admin',created:today()};
+  S.bookings.push(b);
+  if(st==='active'){const r=S.rooms.find(x=>x.id===room);if(r)r.status='occupied';}
+  if(!S.guests.find(g=>g.name===name))
+    S.guests.push({id:S.nid.g++,name,phone:b.phone,email:'',doc:'',source:'Прямое',notes:'',created:today()});
+  save(); cm('m-bk'); render(curPage); toast('✅ Бронь добавлена');
+}
+function showBkDetail(id){
+  const b=S.bookings.find(x=>x.id===id); if(!b) return;
+  const n=days(b.ci,b.co); const tot=n*b.price; const rem=tot-b.advance;
+  document.getElementById('bd-t').innerHTML=`🛎 Бронирование ${b.source==='client'?'<span class="badge bg-new" style="font-size:10px">онлайн</span>':''} <button class="mclose" onclick="cm('m-bd')">✕</button>`;
+  document.getElementById('bd-body').innerHTML=`
+    <div class="ir"><span class="il">Гость</span><span class="iv">${b.guestName}</span></div>
+    <div class="ir"><span class="il">Телефон</span><span class="iv">${b.phone||'—'}</span></div>
+    <div class="ir"><span class="il">Номер</span><span class="iv">${rname(b.room)}</span></div>
+    <div class="ir"><span class="il">Заезд</span><span class="iv">${fmt(b.ci)}</span></div>
+    <div class="ir"><span class="il">Выезд</span><span class="iv">${fmt(b.co)}</span></div>
+    <div class="ir"><span class="il">Ночей</span><span class="iv">${n}</span></div>
+    <div class="ir"><span class="il">Итого</span><span class="iv" style="color:var(--acc);font-size:15px">${tot.toLocaleString('ru')}₽</span></div>
+    <div class="ir"><span class="il">Аванс</span><span class="iv" style="color:var(--grn)">${b.advance.toLocaleString('ru')}₽</span></div>
+    <div class="ir"><span class="il">Остаток</span><span class="iv" style="color:${rem>0?'var(--red)':'var(--grn)'}">${rem.toLocaleString('ru')}₽</span></div>
+    ${b.notes?`<div class="ir"><span class="il">Примечания</span><span class="iv">${b.notes}</span></div>`:''}
+    <div class="ir"><span class="il">Статус</span><span class="iv">${{new:'🆕 Новая заявка',active:'✅ Заселён',upcoming:'🕐 Ожидается',completed:'🏁 Завершён',cancelled:'❌ Отменён'}[b.status]||b.status}</span></div>`;
+  let btns='';
+  if(b.status==='new'){
+    btns+=`<button class="btn btn-g" style="flex:1" onclick="confirmBk(${id})">✅ Подтвердить</button>`;
+    btns+=`<button class="btn btn-d" style="flex:1" onclick="cancelBk(${id})">❌ Отклонить</button>`;
+  }
+  if(b.status==='upcoming') btns+=`<button class="btn btn-p" style="flex:1" onclick="chBk(${id},'active')">Заселить</button>`;
+  if(b.status==='active') btns+=`<button class="btn btn-o" style="flex:1" onclick="chBk(${id},'completed')">Выселить</button>`;
+  if(!b.paid&&b.status!=='new'&&b.status!=='cancelled') btns+=`<button class="btn btn-g" style="flex:1" onclick="payBk(${id})">Оплачено ✓</button>`;
+  if(b.status!=='cancelled'&&b.status!=='completed') btns+=`<button class="btn btn-d" style="flex:1" onclick="delBk(${id})">Удалить</button>`;
+  document.getElementById('bd-acts').innerHTML=btns;
+  om('m-bd');
+}
+function confirmBk(id){const b=S.bookings.find(x=>x.id===id);if(b){b.status=b.ci<=today()?'active':'upcoming';if(b.status==='active'){const r=S.rooms.find(x=>x.id===b.room);if(r)r.status='occupied';}save();cm('m-bd');render(curPage);toast('✅ Бронирование подтверждено');}}
+function cancelBk(id){if(!confirm('Отклонить заявку?'))return;const b=S.bookings.find(x=>x.id===id);if(b){b.status='cancelled';save();cm('m-bd');render(curPage);toast('❌ Заявка отклонена');}}
+function chBk(id,st){const b=S.bookings.find(x=>x.id===id);if(!b)return;b.status=st;const r=S.rooms.find(x=>x.id===b.room);if(st==='active'&&r)r.status='occupied';if(st==='completed'&&r)r.status='cleaning';save();cm('m-bd');render(curPage);toast(st==='active'?'✅ Заселён':'✅ Выселен');}
+function payBk(id){const b=S.bookings.find(x=>x.id===id);if(b){b.paid=true;save();cm('m-bd');render(curPage);toast('💰 Оплата отмечена');}}
+function delBk(id){if(!confirm('Удалить?'))return;S.bookings=S.bookings.filter(x=>x.id!==id);save();cm('m-bd');render(curPage);toast('🗑 Удалено');}
+
+// ─── SERVICES ───
+function fSvcTab(t,btn){
+  curSvcTab=t;
+  document.querySelectorAll('#p-svc .tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sv-bk').style.display=t==='bk'?'block':'none';
+  document.getElementById('sv-cat').style.display=t==='cat'?'block':'none';
+}
+function renderSvcBk(){
+  const q=(document.getElementById('svsrch')?.value||'').toLowerCase();
+  let list=S.svcBookings.filter(b=>!q||b.guest.toLowerCase().includes(q)).sort((a,b)=>b.id-a.id);
+  const el=document.getElementById('svbklist');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="ei">🎯</div><div class="et">Нет</div></div>';return;}
+  el.innerHTML=list.map(b=>{
+    const s=getSvc(b.svcId)||{name:'?',icon:'❓',price:0};
+    const sc={confirmed:'bg-grn',upcoming:'bg-blu',completed:'bg-acc'};
+    return `<div class="item" onclick="showSvcDetail(${b.id})">
+      <span class="stripe" style="background:${b.status==='confirmed'?'var(--grn)':'var(--blu)'}"></span>
+      <div style="padding-left:8px">
+        <div class="irow"><div class="iname">${s.icon} ${s.name}</div><span class="badge ${sc[b.status]||'bg-acc'}">${{confirmed:'АКТИВНО',upcoming:'ОЖИДАЕТСЯ',completed:'ЗАВЕРШЕНО'}[b.status]||b.status}</span></div>
+        <div class="isub">${b.guest} · ${fmt(b.date)} ${b.time} · ${b.dur}ч.</div>
+        <div class="irow" style="margin-top:4px"><span></span><div class="iprice">${(s.price*b.dur).toLocaleString('ru')}₽ ${b.paid?'✅':''}</div></div>
+      </div></div>`;
+  }).join('');
+}
+function renderSvcCat(){
+  document.getElementById('svcatgrid').innerHTML=S.services.map(s=>`
+    <div class="scard ${S.svcBookings.some(b=>b.svcId===s.id&&b.status==='confirmed')?'booked':''}" onclick="openSvcBkModal(${s.id})">
+      <div class="sico">${s.icon}</div>
+      <div class="sname">${s.name}</div>
+      <div class="sprice">${s.price.toLocaleString('ru')}₽/${ptL[s.ptype]||'ч'}</div>
+      <div class="savail">${S.svcBookings.some(b=>b.svcId===s.id&&b.status==='confirmed')?'● Занято':'● Свободно'}</div>
+      <button class="btn btn-d btn-sm" style="margin-top:8px" onclick="event.stopPropagation();delSvcItem(${s.id})">✕ Удалить</button>
+    </div>`).join('');
+}
+function openSvcBkModal(svcId){
+  document.getElementById('sb-svc').innerHTML=S.services.map(s=>`<option value="${s.id}" ${s.id===svcId?'selected':''}>${s.icon} ${s.name} – ${s.price}₽/${ptL[s.ptype]||'ч'}</option>`).join('');
+  ['sb-g','sb-n'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('sb-d').value=today();
+  document.getElementById('sb-t').value='10:00';
+  document.getElementById('sb-dur').value=2;
+  om('m-sbk');
+}
+function saveSvcBk(){
+  const svcId=parseInt(document.getElementById('sb-svc').value);
+  const guest=document.getElementById('sb-g').value.trim();
+  if(!guest){toast('⚠️ Введите гостя');return;}
+  const d=document.getElementById('sb-d').value;
+  const st=d<=today()?'confirmed':'upcoming';
+  S.svcBookings.push({id:S.nid.sbk++,svcId,guest,date:d,time:document.getElementById('sb-t').value,dur:parseInt(document.getElementById('sb-dur').value)||1,notes:document.getElementById('sb-n').value,status:st,paid:false,created:today()});
+  save(); cm('m-sbk'); render(curPage); toast('✅ Услуга забронирована');
+}
+function showSvcDetail(id){
+  const b=S.svcBookings.find(x=>x.id===id); if(!b) return;
+  const s=getSvc(b.svcId)||{name:'?',icon:'❓',price:0,ptype:'hour'};
+  document.getElementById('sd-t').innerHTML=`${s.icon} ${s.name} <button class="mclose" onclick="cm('m-sd')">✕</button>`;
+  document.getElementById('sd-body').innerHTML=`
+    <div class="ir"><span class="il">Гость</span><span class="iv">${b.guest}</span></div>
+    <div class="ir"><span class="il">Дата</span><span class="iv">${fmt(b.date)} ${b.time}</span></div>
+    <div class="ir"><span class="il">Длительность</span><span class="iv">${b.dur}ч.</span></div>
+    <div class="ir"><span class="il">Итого</span><span class="iv" style="color:var(--acc)">${(s.price*b.dur).toLocaleString('ru')}₽</span></div>
+    <div class="ir"><span class="il">Оплата</span><span class="iv">${b.paid?'✅ Оплачено':'❌ Нет'}</span></div>`;
+  let btns='';
+  if(b.status==='upcoming') btns+=`<button class="btn btn-p" style="flex:1" onclick="chSvc(${id},'confirmed')">Подтвердить</button>`;
+  if(b.status==='confirmed') btns+=`<button class="btn btn-o" style="flex:1" onclick="chSvc(${id},'completed')">Завершить</button>`;
+  if(!b.paid) btns+=`<button class="btn btn-g" style="flex:1" onclick="paySvc(${id})">Оплачено ✓</button>`;
+  btns+=`<button class="btn btn-d" style="flex:1" onclick="delSvcBk(${id})">Удалить</button>`;
+  document.getElementById('sd-acts').innerHTML=btns;
+  om('m-sd');
+}
+function chSvc(id,st){const b=S.svcBookings.find(x=>x.id===id);if(b){b.status=st;save();cm('m-sd');render(curPage);toast('✅ Обновлено');}}
+function paySvc(id){const b=S.svcBookings.find(x=>x.id===id);if(b){b.paid=true;save();cm('m-sd');render(curPage);toast('💰 Оплачено');}}
+function delSvcBk(id){S.svcBookings=S.svcBookings.filter(x=>x.id!==id);save();cm('m-sd');render(curPage);toast('🗑 Удалено');}
+function openAddSvc(){['as-n','as-d'].forEach(i=>document.getElementById(i).value='');document.getElementById('as-i').value='';document.getElementById('as-p').value='';document.getElementById('as-pt').value='hour';om('m-asvc');}
+function pi(el,icon){document.getElementById('as-i').value=icon;document.querySelectorAll('#m-asvc .chip').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
+function saveSvc(){
+  const n=document.getElementById('as-n').value.trim(); if(!n){toast('⚠️ Название');return;}
+  S.services.push({id:S.nid.svc++,name:n,icon:document.getElementById('as-i').value||'⭐',price:parseInt(document.getElementById('as-p').value)||0,ptype:document.getElementById('as-pt').value,desc:document.getElementById('as-d').value});
+  save(); cm('m-asvc'); render(curPage); toast('✅ Услуга добавлена');
+}
+function delSvcItem(id){if(!confirm('Удалить услугу?'))return;S.services=S.services.filter(x=>x.id!==id);S.svcBookings=S.svcBookings.filter(x=>x.svcId!==id);save();renderSvcCat();toast('🗑 Удалено');}
+
+// ─── ROOMS ───
+function renderRooms(){
+  document.getElementById('rgrid').innerHTML=S.rooms.map(r=>`
+    <div class="rcell ${r.status}" onclick="showRoomDetail(${r.id})">
+      <div class="rnum">${r.num}</div><div class="rtype">${r.type}</div>
+      <div class="rst">${{occupied:'Занят',free:'Свободен',cleaning:'Уборка'}[r.status]||r.status}</div>
+    </div>`).join('');
+}
+function showRoomDetail(id){
+  const r=S.rooms.find(x=>x.id===id); if(!r) return;
+  const ab=S.bookings.find(b=>b.room===id&&b.status==='active');
+  document.getElementById('rd-t').innerHTML=`🏠 №${r.num} – ${r.type} <button class="mclose" onclick="cm('m-rd')">✕</button>`;
+  document.getElementById('rd-body').innerHTML=`
+    <div class="ir"><span class="il">Тип</span><span class="iv">${r.type}</span></div>
+    <div class="ir"><span class="il">Спальных мест</span><span class="iv">${r.beds}</span></div>
+    <div class="ir"><span class="il">Цена/ночь</span><span class="iv">${r.price.toLocaleString('ru')}₽</span></div>
+    <div class="ir"><span class="il">Статус</span><span class="iv">${{occupied:'🔴 Занят',free:'🟢 Свободен',cleaning:'🟡 Уборка'}[r.status]||r.status}</span></div>
+    ${r.desc?`<div class="ir"><span class="il">Особенности</span><span class="iv">${r.desc}</span></div>`:''}
+    ${ab?`<div class="div"></div><div class="slbl">Текущий гость</div><div class="ir"><span class="il">Гость</span><span class="iv">${ab.guestName}</span></div><div class="ir"><span class="il">Выезд</span><span class="iv">${fmt(ab.co)}</span></div>`:''}`;
+  let btns='';
+  if(r.status!=='free') btns+=`<button class="btn btn-g" style="flex:1" onclick="setRSt(${id},'free')">✨ Свободен</button>`;
+  if(r.status!=='cleaning') btns+=`<button class="btn btn-ghost" style="flex:1" onclick="setRSt(${id},'cleaning')">🧹 Уборка</button>`;
+  btns+=`<button class="btn btn-d btn-sm" onclick="delRoom(${id})">Удалить</button>`;
+  document.getElementById('rd-acts').innerHTML=btns;
+  om('m-rd');
+}
+function setRSt(id,st){const r=S.rooms.find(x=>x.id===id);if(r){r.status=st;save();cm('m-rd');renderRooms();renderDash();toast('✅ Обновлено');}}
+function delRoom(id){if(!confirm('Удалить?'))return;S.rooms=S.rooms.filter(x=>x.id!==id);save();cm('m-rd');renderRooms();renderDash();toast('🗑 Удалено');}
+function openAddRoom(){['ar-n','ar-d'].forEach(i=>document.getElementById(i).value='');document.getElementById('ar-b').value=2;document.getElementById('ar-p').value='';document.getElementById('ar-t').value='Стандарт';om('m-ar');}
+function saveRoom(){
+  const n=document.getElementById('ar-n').value.trim(); if(!n){toast('⚠️ Укажите номер');return;}
+  S.rooms.push({id:S.nid.room++,num:n,type:document.getElementById('ar-t').value,beds:parseInt(document.getElementById('ar-b').value)||1,price:parseInt(document.getElementById('ar-p').value)||0,desc:document.getElementById('ar-d').value,status:'free'});
+  save(); cm('m-ar'); renderRooms(); renderDash(); toast('✅ Номер добавлен');
+}
+
+// ─── GUESTS ───
+function renderGuests(){
+  const q=(document.getElementById('gsrch')?.value||'').toLowerCase();
+  let list=S.guests.filter(g=>!q||g.name.toLowerCase().includes(q)||g.phone.includes(q));
+  const el=document.getElementById('glist');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="ei">👥</div><div class="et">Нет гостей</div></div>';return;}
+  el.innerHTML=list.map(g=>{
+    const bc=S.bookings.filter(b=>b.guestName===g.name).length;
+    return `<div class="item" onclick="showGuestDetail(${g.id})">
+      <span class="stripe" style="background:var(--acc)"></span>
+      <div style="padding-left:8px">
+        <div class="irow"><div class="iname">${g.name}</div><span class="badge bg-acc">${bc}бр.</span></div>
+        <div class="isub">${g.phone||''} ${g.source?'· '+g.source:''}</div>
+        ${g.notes?`<div class="isub" style="color:var(--tx2)">${g.notes}</div>`:''}
+      </div></div>`;
+  }).join('');
+}
+function showGuestDetail(id){
+  const g=S.guests.find(x=>x.id===id); if(!g) return;
+  const bk=S.bookings.filter(b=>b.guestName===g.name);
+  document.getElementById('gd-body').innerHTML=`
+    <div class="ir"><span class="il">ФИО</span><span class="iv">${g.name}</span></div>
+    <div class="ir"><span class="il">Телефон</span><span class="iv">${g.phone||'—'}</span></div>
+    <div class="ir"><span class="il">Email</span><span class="iv">${g.email||'—'}</span></div>
+    <div class="ir"><span class="il">Документ</span><span class="iv">${g.doc||'—'}</span></div>
+    <div class="ir"><span class="il">Источник</span><span class="iv">${g.source||'—'}</span></div>
+    <div class="ir"><span class="il">Заметки</span><span class="iv">${g.notes||'—'}</span></div>
+    <div class="div"></div><div class="slbl">История (${bk.length} бр.)</div>
+    ${bk.map(b=>`<div style="background:var(--s2);border-radius:9px;padding:9px 11px;margin-bottom:6px"><div style="font-weight:600;font-size:13px">${rname(b.room)} · ${fmt(b.ci)}–${fmt(b.co)}</div><div style="font-size:11px;color:var(--tx3);margin-top:2px">${(days(b.ci,b.co)*b.price).toLocaleString('ru')}₽ ${b.paid?'✅':''}</div></div>`).join('')||'<div style="color:var(--tx3);font-size:13px">Нет бронирований</div>'}`;
+  document.getElementById('g-del').onclick=()=>{if(!confirm('Удалить гостя?'))return;S.guests=S.guests.filter(x=>x.id!==id);save();cm('m-gd');renderGuests();toast('🗑 Удалён');};
+  om('m-gd');
+}
+
+// ─── INIT ───
+
+function renderReviews(){
+  const list=S.reviews||[];
+  const avg=list.length?Math.round(list.reduce((a,r)=>a+r.rating,0)/list.length*10)/10:0;
+  const badge=document.getElementById('rev-avg-badge');
+  if(badge)badge.textContent='★ '+avg+' ('+list.length+')';
+  const el=document.getElementById('rev-list');if(!el)return;
+  if(!list.length){el.innerHTML='<div class="empty"><div class="ei">💬</div><div class="et">Пока нет отзывов</div></div>';return;}
+  el.innerHTML=[...list].reverse().map(r=>`
+    <div style="background:var(--s2);border-radius:12px;padding:13px;margin-bottom:8px;border:1px solid var(--brd)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px">
+        <div><div style="font-weight:700;font-size:13px">${r.name}</div><div style="font-size:10.5px;color:var(--tx3);margin-top:2px">${fmt(r.date)}</div></div>
+        <button class="btn btn-ghost btn-sm" style="padding:5px 10px;font-size:11px" onclick="openReplyM(${r.id})">Ответить</button>
+      </div>
+      <div style="color:var(--acc);font-size:14px;margin-bottom:6px">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+      <div style="font-size:13px;color:var(--tx2);line-height:1.5">${r.text}</div>
+      ${r.reply?`<div style="background:var(--s3);border-radius:8px;padding:10px;margin-top:8px;border-left:2px solid var(--acc)"><div style="font-size:9.5px;color:var(--acc);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Ответ</div><div style="font-size:12.5px;color:var(--tx2)">${r.reply}</div></div>`:''}
+    </div>`).join('');
+}
+let _replyId=null;
+function openReplyM(id){
+  const r=(S.reviews||[]).find(x=>x.id===id);if(!r)return;_replyId=id;
+  const m=document.createElement('div');m.className='mbg open';m.id='m-rtmp';
+  m.innerHTML=`<div class="modal"><div class="mtit">💬 Ответ <button class="mcls" onclick="document.getElementById('m-rtmp').remove()">✕</button></div><div style="background:var(--s2);border-radius:10px;padding:10px 12px;margin-bottom:13px"><div style="font-weight:700;font-size:13px">${r.name} · ${'★'.repeat(r.rating)}</div><div style="font-size:12.5px;color:var(--tx2);margin-top:4px">${r.text}</div></div><div class="fg"><label class="fl">Ответ</label><textarea class="fi" id="reply-ta" rows="4" style="resize:none;line-height:1.5">${r.reply||''}</textarea></div><div style="display:flex;gap:9px;margin-top:4px"><button class="btn btn-ghost" onclick="document.getElementById('m-rtmp').remove()">Отмена</button><button class="btn btn-p" onclick="doReplyM()">Сохранить</button></div></div>`;
+  m.addEventListener('click',e=>{if(e.target===m)m.remove();});document.body.appendChild(m);
+}
+function doReplyM(){
+  const txt=document.getElementById('reply-ta').value.trim();
+  const r=(S.reviews||[]).find(x=>x.id===_replyId);
+  if(r){r.reply=txt;save();document.getElementById('m-rtmp')?.remove();renderReviews();renderDash();toast('✅ Ответ сохранён');}
+}
+document.querySelectorAll('.mbg').forEach(b=>b.addEventListener('click',e=>{if(e.target===b)b.classList.remove('open');}));
+</script>
+</body>
+</html>
